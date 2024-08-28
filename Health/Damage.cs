@@ -100,36 +100,41 @@ namespace AF.Health
             Weapon currentWeapon,
             int playerReputation,
             bool isFaithSpell,
-            bool isHexSpell)
+            bool isHexSpell,
+            bool shouldDoubleDamage)
         {
+            float multiplier = shouldDoubleDamage ? 2 : 1f;
+
             if (this.fire > 0)
             {
-                this.fire += (int)(currentWeapon.GetWeaponFireAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon));
+                this.fire += (int)(currentWeapon.GetWeaponFireAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.frost > 0)
             {
-                this.frost += (int)(currentWeapon.GetWeaponFrostAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon));
+                this.frost += (int)(currentWeapon.GetWeaponFrostAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.magic > 0)
             {
-                this.magic += (int)(currentWeapon.GetWeaponMagicAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon));
+                this.magic += (int)(currentWeapon.GetWeaponMagicAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.lightning > 0)
             {
-                this.lightning += (int)(currentWeapon.GetWeaponLightningAttack(playerReputation) + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon));
+                this.lightning += (int)(
+                    currentWeapon.GetWeaponLightningAttack(playerReputation) + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.darkness > 0)
             {
-                this.darkness += (int)(currentWeapon.GetWeaponDarknessAttack(playerReputation) + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon));
+                this.darkness += (int)(currentWeapon.GetWeaponDarknessAttack(playerReputation)
+                    + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.water > 0)
             {
-                this.water += (int)(currentWeapon.GetWeaponWaterAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon));
+                this.water += (int)(currentWeapon.GetWeaponWaterAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.pushForce > 0 && isFaithSpell)
@@ -138,6 +143,7 @@ namespace AF.Health
             }
 
             Damage weaponDamage = currentWeapon.GetWeaponDamage();
+
 
             if (weaponDamage.statusEffects != null && weaponDamage.statusEffects.Length > 0)
             {

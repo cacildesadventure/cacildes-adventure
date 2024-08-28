@@ -27,7 +27,7 @@
                     "name": "Jump",
                     "type": "Button",
                     "id": "8c4abdf8-4099-493a-aa1a-129acec7c3df",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -63,7 +63,7 @@
                     "name": "Menu",
                     "type": "Button",
                     "id": "31085940-717b-4ec5-bcf0-933ac368503a",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -171,7 +171,7 @@
                     "name": "ConsumeFavoriteItem",
                     "type": "Button",
                     "id": "79c7f37c-de28-4323-8415-6fba64cde224",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -189,7 +189,7 @@
                     "name": "GoBackOneHour",
                     "type": "Button",
                     "id": "a76fbc58-c504-436d-87e3-6437b288ca73",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -346,7 +346,7 @@
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
+                    "groups": "Gamepad;PS4 Controller;Xbox Controller",
                     "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -446,6 +446,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;Xbox Controller;PS4 Controller",
+                    "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "85025677-b155-42eb-87c6-0daa704368f5",
+                    "path": "<XInputController>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Menu",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -787,6 +798,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;Xbox Controller;PS4 Controller",
+                    "action": "MainMenuUnequipSlot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d5e59aaa-297c-4530-855a-2e66754061d6",
+                    "path": "<XInputController>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "MainMenuUnequipSlot",
                     "isComposite": false,
                     "isPartOfComposite": false

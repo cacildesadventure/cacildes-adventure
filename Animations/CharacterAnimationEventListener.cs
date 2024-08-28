@@ -298,5 +298,14 @@ namespace AF.Animations
         public void ShowShield()
         {
         }
+
+        public void OnExecuted()
+        {
+            characterManager.executionManager.OnExecuted();
+        }
+
+        public void OnExecuting()
+        {
+        }
     }
 }

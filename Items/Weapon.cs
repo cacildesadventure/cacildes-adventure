@@ -44,6 +44,7 @@ namespace AF
         Lightning,
         Magic,
         Darkness,
+        Water,
     }
 
     public enum PushForce
@@ -124,6 +125,7 @@ namespace AF
         public int amountOfGoldReceivedPerHit = 0;
         public bool doubleCoinsUponKillingEnemies = false;
         public bool doubleDamageDuringNightTime = false;
+        public bool doubleDamageDuringDayTime = false;
         public int healthRestoredWithEachHit = 0;
 
         [Header("Jump Attack")]
@@ -320,6 +322,11 @@ namespace AF
 
         public bool AreRequirementsMet(StatsBonusController statsBonusController)
         {
+            if (statsBonusController.ignoreWeaponRequirements)
+            {
+                return true;
+            }
+
             if (strengthRequired != 0 && statsBonusController.GetCurrentStrength() < strengthRequired)
             {
                 return false;

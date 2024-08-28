@@ -33,6 +33,7 @@ namespace AF.Combat
 
         [Header("Damage")]
         public Damage damage;
+        public HitReaction targetHitReaction;
 
         [Header("Cooldowns")]
         public float maxCooldown = 15f;

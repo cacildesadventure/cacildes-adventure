@@ -112,12 +112,7 @@ namespace AF.Health
             onDeath?.Invoke();
 
             // Disable enemy colliders so they don't block doors and other places
-            characterManager.characterController.enabled = false;
-            var lockOnRef = GetLockOnRef();
-            if (lockOnRef != null && lockOnRef.TryGetComponent<SphereCollider>(out var sphereCollider))
-            {
-                sphereCollider.enabled = false;
-            }
+            HandleCollisions(false);
         }
 
         public override int GetMaxHealth()
@@ -148,11 +143,17 @@ namespace AF.Health
             RestoreFullHealth();
             onRevive?.Invoke();
 
-            characterManager.characterController.enabled = true;
+            HandleCollisions(true);
+        }
+
+        void HandleCollisions(bool activate)
+        {
+            characterManager.characterController.enabled = activate;
+
             var lockOnRef = GetLockOnRef();
-            if (lockOnRef != null)
+            if (lockOnRef != null && lockOnRef.TryGetComponent<SphereCollider>(out var sphereCollider))
             {
-                lockOnRef.GetComponent<SphereCollider>().enabled = true;
+                sphereCollider.enabled = activate;
             }
         }
 

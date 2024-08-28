@@ -24,8 +24,7 @@ namespace AF
         PlayerManager _playerManager;
         public State chaseState;
 
-        [Header("Flags")]
-        public bool hasFinishedTeleporting = false;
+        public const string hashTeleporting = "Teleport";
 
         [Header("Events")]
         public UnityEvent onStateEnter;
@@ -34,14 +33,17 @@ namespace AF
 
         public override void OnStateEnter(StateManager stateManager)
         {
-            hasFinishedTeleporting = false;
-
             characterManager.agent.ResetPath();
             characterManager.agent.speed = 0f;
 
             onStateEnter?.Invoke();
 
-            StartCoroutine(BeginTeleporting());
+
+            onDisappear?.Invoke();
+
+            TeleportEnemy();
+
+            characterManager.PlayBusyAnimationWithRootMotion(hashTeleporting);
         }
 
         public override void OnStateExit(StateManager stateManager)
@@ -50,25 +52,8 @@ namespace AF
 
         public override State Tick(StateManager stateManager)
         {
-            if (hasFinishedTeleporting)
-            {
-                onReappear?.Invoke();
-                return chaseState;
-            }
 
             return this;
-        }
-
-        IEnumerator BeginTeleporting()
-        {
-            yield return new WaitForSeconds(delayBeforeTeleportationBegins);
-            onDisappear?.Invoke();
-
-            yield return new WaitForSeconds(Random.Range(minimumTeleportTime, maximumTeleportTime));
-
-            TeleportEnemy();
-
-            hasFinishedTeleporting = true;
         }
 
         void TeleportEnemy()
@@ -108,5 +93,12 @@ namespace AF
             return _playerManager;
         }
 
+        /// <summary>
+        /// Unity Event
+        /// </summary>
+        public void OnTeleportEnd()
+        {
+            onReappear?.Invoke();
+        }
     }
 }

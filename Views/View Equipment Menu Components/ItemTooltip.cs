@@ -156,6 +156,7 @@ namespace AF.UI.EquipmentMenu
         public LocalizedString lightningDefenseBonus;
         public LocalizedString magicDefenseBonus;
         public LocalizedString darknessDefenseBonus;
+        public LocalizedString waterDefenseBonus;
         // "+{0} Strength"
         public LocalizedString strengthBonus;
         public LocalizedString dexterityBonus;
@@ -215,6 +216,7 @@ namespace AF.UI.EquipmentMenu
 
         // Attack bonus when two handing
         public LocalizedString multiplierWhenTwoHanding;
+        public LocalizedString lostUponUse;
 
 
         private void OnEnable()
@@ -631,6 +633,11 @@ namespace AF.UI.EquipmentMenu
                 CreateTooltip(statusEffectsSprite, Color.white, shield.GetFormattedStatusResistances());
             }
 
+            if (shield.statusEffectCancellationRates != null && shield.statusEffectCancellationRates.Length > 0)
+            {
+                CreateTooltip(statusEffectsSprite, Color.white, shield.GetFormattedStatusCancellationRates());
+            }
+
             if (shield.poiseBonus != 0)
             {
                 CreatePoiseTooltip(shield.poiseBonus);
@@ -888,6 +895,15 @@ namespace AF.UI.EquipmentMenu
                         darknessDefenseBonus.GetLocalizedString(),
                         armor.darkDefense));
             }
+            if (armor.waterDefense > 0)
+            {
+                CreateTooltip(
+                    waterSprite,
+                    water,
+                    String.Format(
+                        waterDefenseBonus.GetLocalizedString(),
+                        armor.waterDefense));
+            }
 
             if (armor.poiseBonus != 0)
             {
@@ -902,6 +918,11 @@ namespace AF.UI.EquipmentMenu
             if (armor.statusEffectResistances != null && armor.statusEffectResistances.Length > 0)
             {
                 CreateTooltip(statusEffectsSprite, Color.white, armor.GetFormattedStatusResistances());
+            }
+
+            if (armor.statusEffectCancellationRates != null && armor.statusEffectCancellationRates.Length > 0)
+            {
+                CreateTooltip(statusEffectsSprite, Color.white, armor.GetFormattedStatusCancellationRates());
             }
 
             CreateAdditionalGoldTooltip(armor.additionalCoinPercentage);
@@ -1052,6 +1073,11 @@ namespace AF.UI.EquipmentMenu
             if (accessory.GetShortDescription() != null && accessory.GetShortDescription().Length > 0)
             {
                 CreateTooltip(statusEffectsSprite, Color.white, accessory.GetShortDescription());
+            }
+
+            if (accessory.statusEffectCancellationRates != null && accessory.statusEffectCancellationRates.Length > 0)
+            {
+                CreateTooltip(statusEffectsSprite, Color.white, accessory.GetFormattedStatusCancellationRates());
             }
 
             if (accessory.healthBonus > 0)
@@ -1272,6 +1298,37 @@ namespace AF.UI.EquipmentMenu
                 if (card.commonlyFoundDescription.IsEmpty == false)
                 {
                     CreateTooltip(cardSprite, Color.white, card.commonlyFoundDescription.GetLocalizedString());
+                }
+
+                if (card.manaRequired > 0)
+                {
+                    CreateTooltip(
+                        spellCastSprite,
+                        Color.white,
+                        String.Format(
+                            manaPointsRequiredToCast.GetLocalizedString(),
+                            card.manaRequired
+                    ));
+                }
+
+                if (card.staminaRequired > 0)
+                {
+                    CreateTooltip(
+                        staminaCostSprite,
+                        Color.white,
+                        String.Format(
+                            staminaCostLabel.GetLocalizedString(),
+                            card.staminaRequired,
+                            card.staminaRequired
+                    ));
+                }
+                if (!card.isRenewable)
+                {
+                    CreateTooltip(
+                        cardSprite,
+                        Color.white,
+                        lostUponUse.GetLocalizedString()
+                    );
                 }
             }
 

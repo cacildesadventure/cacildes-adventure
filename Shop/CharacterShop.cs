@@ -101,12 +101,12 @@ namespace AF.Shops
 
             if (requiredItemForDiscounts != null && discountGivenByItemInInventory != 1 && inventoryDatabase.HasItem(requiredItemForDiscounts))
             {
-                discountPercentage += 1 - discountGivenByItemInInventory;
+                discountPercentage += discountGivenByItemInInventory;
             }
 
             if (discountGivenByShopItself != 1)
             {
-                discountPercentage += 1 - discountGivenByShopItself;
+                discountPercentage += discountGivenByShopItself;
             }
 
             if (discountGivenByQuestCompleted != 1
@@ -114,12 +114,12 @@ namespace AF.Shops
                 && questProgressesRequiredForDiscount.Length > 0
                 && questProgressesRequiredForDiscount.Contains(questParent.questProgress))
             {
-                discountPercentage += 1 - discountGivenByQuestCompleted;
+                discountPercentage += discountGivenByQuestCompleted;
             }
 
             if (statsBonusController.discountPercentage > 0)
             {
-                discountPercentage += 1 - statsBonusController.discountPercentage;
+                discountPercentage += statsBonusController.discountPercentage;
             }
 
             return ShopUtils.GetItemFinalPrice(item, isBuying, Mathf.Min(1f, discountPercentage));
@@ -132,18 +132,18 @@ namespace AF.Shops
             if (requiredItemForDiscounts != null && discountGivenByItemInInventory != 1 && inventoryDatabase.HasItem(requiredItemForDiscounts))
             {
                 discountDescriptions.Add(
-                    (isBuying ? "-" : "+") + (100 - discountGivenByItemInInventory * 100)
+                    (isBuying ? "-" : "+") + (discountGivenByItemInInventory * 100)
                     + String.Format(pricesForHavingItemInInventory_LocalizedString.GetLocalizedString(), requiredItemForDiscounts.GetName()));
             }
             if (discountGivenByShopItself != 1)
             {
                 discountDescriptions.Add((isBuying ? "-" : "+")
-                    + (100 - discountGivenByShopItself * 100) + pricesFromShopAffinityTowardsCacildes_LocalizedString.GetLocalizedString());
+                    + (discountGivenByShopItself * 100) + pricesFromShopAffinityTowardsCacildes_LocalizedString.GetLocalizedString());
             }
             if (statsBonusController.discountPercentage > 0)
             {
                 discountDescriptions.Add((isBuying ? "-" : "+")
-                    + (100 - statsBonusController.discountPercentage * 100)
+                    + (statsBonusController.discountPercentage * 100)
                     + pricesFromPlayerBonusStats_LocalizedString.GetLocalizedString());
             }
             if (discountGivenByQuestCompleted != 1
@@ -151,7 +151,7 @@ namespace AF.Shops
                 && questProgressesRequiredForDiscount.Length > 0
                 && questProgressesRequiredForDiscount.Contains(questParent.questProgress))
             {
-                discountDescriptions.Add((isBuying ? "-" : "+") + (100 - discountGivenByQuestCompleted * 100)
+                discountDescriptions.Add((isBuying ? "-" : "+") + (discountGivenByQuestCompleted * 100)
                 + String.Format(pricesFromCompletingQuest_LocalizedString.GetLocalizedString(), questParent.questName_LocalizedString.GetLocalizedString()));
             }
 

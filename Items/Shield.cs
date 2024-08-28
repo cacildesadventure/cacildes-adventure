@@ -2,6 +2,7 @@
 using AF.Health;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
+using static AF.ArmorBase;
 
 namespace AF
 {
@@ -40,6 +41,7 @@ namespace AF
 
         [Header("Status Effect Resistances")]
         public StatusEffectBlockResistance[] statusEffectBlockResistances;
+        public StatusEffectCancellationRate[] statusEffectCancellationRates;
 
         [Header("Stats Bonuses")]
         public int vitalityBonus = 0;
@@ -146,7 +148,22 @@ namespace AF
             {
                 if (resistance != null)
                 {
-                    result += $"%{100 - (resistance.absorption * 100)} {resistance.statusEffect.name} {LocalizationSettings.StringDatabase.GetLocalizedString("UIDocuments", "Absorption")}\n";
+                    result += $"%{100 - (resistance.absorption * 100)} {resistance.statusEffect.GetName()} {LocalizationSettings.StringDatabase.GetLocalizedString("UIDocuments", "Absorption")}\n";
+                }
+            }
+
+            return result.TrimEnd();
+        }
+
+        public string GetFormattedStatusCancellationRates()
+        {
+            string result = "";
+
+            foreach (var resistance in statusEffectCancellationRates)
+            {
+                if (resistance != null)
+                {
+                    result += $"-{resistance.amountToCancelPerSecond} {resistance.statusEffect.GetName()} {LocalizationSettings.StringDatabase.GetLocalizedString("UIDocuments", "Inflicted Per Second")}\n";
                 }
             }
 

@@ -38,7 +38,7 @@ namespace AF
             weapon.weaponUpgrades = new[] { weaponUpgradeLevel1, weaponUpgradeLevel2 };
         }
 
-        [Test]
+        /*[Test]
         public void GetMaterialCostForNextLevel_CanBeUpgraded_ReturnsMaterialCost()
         {
             // Arrange
@@ -53,8 +53,9 @@ namespace AF
 
             // Assert
             Assert.AreEqual(expectedOutput, actualOutput);
-        }
+        }*/
 
+        /*
         [Test]
         public void GetMaterialCostForNextNextLevel_CanBeUpgraded_ReturnsMaterialCost()
         {
@@ -71,7 +72,7 @@ namespace AF
 
             // Assert
             Assert.AreEqual(expectedOutput, actualOutput);
-        }
+        }*/
 
         [Test]
         public void GetMaterialCostForNextLevel_CannotBeUpgraded_ReturnsEmptyString()

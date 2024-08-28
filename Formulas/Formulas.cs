@@ -7,6 +7,11 @@ namespace AF
     public static class Formulas
     {
 
+        public static int CalculateStatForLevel(int baseValue, int level, float multiplier)
+        {
+            return (int)Mathf.Sqrt(level * multiplier) * 2 + baseValue + level;
+        }
+
         public static int CalculateAIHealth(int baseValue, int currentLevel)
         {
             return baseValue + Mathf.RoundToInt((baseValue / 4) * Mathf.Pow(1.025f, currentLevel));
@@ -57,6 +62,9 @@ namespace AF
                     break;
                 case WeaponElementType.Darkness:
                     elementalDefense = Mathf.Clamp(defenseStatManager.GetDarknessDefense() / 100, 0f, 1f); // Convert to percentage and cap at 100%
+                    break;
+                case WeaponElementType.Water:
+                    elementalDefense = Mathf.Clamp(defenseStatManager.GetWaterDefense() / 100, 0f, 1f); // Convert to percentage and cap at 100%
                     break;
             }
 

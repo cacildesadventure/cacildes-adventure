@@ -199,6 +199,8 @@ namespace AF.Equipment
             equipmentDatabase.EquipShield(shieldToEquip, slot);
 
             UpdateCurrentShield();
+
+            playerManager.statsBonusController.RecalculateEquipmentBonus();
         }
 
         public void UnequipShield(int slot)
@@ -206,6 +208,8 @@ namespace AF.Equipment
             equipmentDatabase.UnequipShield(slot);
 
             UpdateCurrentShield();
+
+            playerManager.statsBonusController.RecalculateEquipmentBonus();
         }
 
         public void ShowEquipment()
@@ -509,7 +513,7 @@ namespace AF.Equipment
 
             if (playerManager.manaManager.playerStatsDatabase.currentMana < playerManager.playerWeaponsManager.currentWeaponInstance.weapon.manaCostToUseWeaponSpecialAttack)
             {
-                notificationManager.ShowNotification(NotEnoughManaToUseWeaponSpecial.GetLocalizedString());
+                //                notificationManager.ShowNotification(NotEnoughManaToUseWeaponSpecial.GetLocalizedString());
                 return;
             }
 

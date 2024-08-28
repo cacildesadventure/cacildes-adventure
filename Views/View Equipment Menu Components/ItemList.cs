@@ -399,6 +399,11 @@ namespace AF.UI.EquipmentMenu
                             }
                             else
                             {
+                                if (playerManager.statsBonusController.ignoreWeaponRequirements)
+                                {
+                                    playerManager.statsBonusController.SetIgnoreNextWeaponToEquipRequirements(false);
+                                }
+
                                 playerManager.playerWeaponsManager.EquipWeapon(weapon, slotIndex);
                             }
                         }

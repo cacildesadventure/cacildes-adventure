@@ -38,6 +38,7 @@ namespace AF
         public float lightningDefense;
         public float magicDefense = 0;
         public float darkDefense = 0;
+        public float waterDefense = 0;
 
         [Header("Negative Status Resistances")]
         public StatusEffectResistance[] statusEffectResistances;
@@ -113,6 +114,22 @@ namespace AF
             return result.TrimEnd();
         }
 
+
+        public string GetFormattedStatusCancellationRates()
+        {
+            string result = "";
+
+            foreach (var resistance in statusEffectCancellationRates)
+            {
+                if (resistance != null)
+                {
+                    result += $"-{resistance.amountToCancelPerSecond} {resistance.statusEffect.GetName()} {LocalizationSettings.StringDatabase.GetLocalizedString("UIDocuments", "Inflicted Per Second")}\n";
+                }
+            }
+
+            return result.TrimEnd();
+        }
+
         public string GetFormattedDamageDealtToEnemiesUpponAttacked()
         {
             string result = "";
@@ -127,6 +144,8 @@ namespace AF
 
             return result.TrimEnd();
         }
+
+
 
         public void AttackEnemy(CharacterManager enemy)
         {

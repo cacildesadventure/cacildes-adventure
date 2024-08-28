@@ -295,5 +295,14 @@ namespace AF.Animations
         {
             playerManager.playerCardManager.UseCurrentCard();
         }
+
+        public void OnExecuted()
+        {
+        }
+
+        public void OnExecuting()
+        {
+            playerManager.executionerManager.OnExecuting();
+        }
     }
 }

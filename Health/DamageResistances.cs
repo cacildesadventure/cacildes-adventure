@@ -37,6 +37,8 @@ namespace AF
         [Range(0.1f, 1f)] public float waterDamageFilter = 1;
         [Range(1, 5f)] public float waterDamageBonus = 1;
 
+        public float loweredDamageBonusMultiplier = 1;
+
         public virtual Damage FilterIncomingDamage(Damage incomingDamage)
         {
             Damage filteredDamage = new()
@@ -56,9 +58,11 @@ namespace AF
                 damageType = incomingDamage.damageType
             };
 
-            filteredDamage.physical = (int)(filteredDamage.physical
+            filteredDamage.physical = (int)((filteredDamage.physical
                 * GetDamageMultiplier(incomingDamage.weaponAttackType, weaponTypeResistances, r => r.damageResistance)
-                * GetDamageMultiplier(incomingDamage.weaponAttackType, weaponTypeResistances, r => r.damageBonus));
+                * GetDamageMultiplier(incomingDamage.weaponAttackType, weaponTypeResistances, r => r.damageBonus)) * loweredDamageBonusMultiplier);
+
+
             filteredDamage.fire = ApplyElementalDamageBonus(filteredDamage.fire, fireDamageBonus, fireDamageFilter);
             filteredDamage.frost = ApplyElementalDamageBonus(filteredDamage.frost, frostDamageBonus, frostDamageFilter);
             filteredDamage.magic = ApplyElementalDamageBonus(filteredDamage.magic, magicDamageBonus, magicDamageFilter);
@@ -88,6 +92,11 @@ namespace AF
         int ApplyElementalDamageBonus(int damage, float bonus, float filter)
         {
             return (int)(damage * bonus * filter);
+        }
+
+        public void SetLoweredDamageBonusMultiplier(float value)
+        {
+            this.loweredDamageBonusMultiplier = value;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using AF.Events;
 using AF.Inventory;
 using AF.Stats;
@@ -61,7 +62,7 @@ namespace AF
         public Vector3 popEffectWhenSwitchingSlots = new Vector3(0.8f, 0.8f, 0.8f);
 
         VisualElement leftGamepad, alpha1, upGamepad, alpha2, rightGamepad, alpha3, downGamepad, alpha4;
-        VisualElement useKeyboard, useGamepad;
+        VisualElement useKeyboard, useGamepad, useXbox;
         VisualElement equipmentContainer;
 
         VisualElement KeyboardActions, GamepadActions;
@@ -85,6 +86,8 @@ namespace AF
         public Color staminaOriginalColor;
         public Color manaOriginalColor;
 
+        public Color highlightColor;
+
         private void Awake()
         {
 
@@ -107,14 +110,13 @@ namespace AF
 
         void EvaluatePlayerHUD()
         {
-
             if (gameSettings.ShouldShowPlayerHUD())
             {
-                ShowHUD();
+                ShowControlHints();
             }
             else
             {
-                HideHUD();
+                HideControlHints();
             }
         }
 
@@ -154,6 +156,7 @@ namespace AF
 
             useKeyboard = consumableSlotContainer.Q<VisualElement>("UseKeyboard");
             useGamepad = consumableSlotContainer.Q<VisualElement>("UseGamepad");
+            useXbox = consumableSlotContainer.Q<VisualElement>("UseXbox");
 
             equipmentContainer = root.Q<VisualElement>("EquipmentContainer");
 
@@ -273,16 +276,22 @@ namespace AF
 
         public void HideHUD()
         {
-            root.visible = false;
         }
 
         public void ShowHUD()
         {
-            if (gameSettings.ShouldShowPlayerHUD())
-            {
-                root.visible = true;
-                UpdateInputsHUD();
-            }
+        }
+
+        public void ShowControlHints()
+        {
+            KeyboardActions.style.opacity = 1;
+            GamepadActions.style.opacity = 1;
+        }
+
+        public void HideControlHints()
+        {
+            KeyboardActions.style.opacity = 0;
+            GamepadActions.style.opacity = 0;
         }
 
         private void Update()
@@ -339,6 +348,7 @@ namespace AF
             downGamepad.style.display = Gamepad.current != null ? DisplayStyle.Flex : DisplayStyle.None;
 
             useGamepad.style.display = equipmentDatabase.GetCurrentConsumable() != null && Gamepad.current != null ? DisplayStyle.Flex : DisplayStyle.None;
+            useXbox.style.display = equipmentDatabase.GetCurrentConsumable() != null && Gamepad.current != null ? DisplayStyle.Flex : DisplayStyle.None;
             useKeyboard.style.display = equipmentDatabase.GetCurrentConsumable() != null && Gamepad.current == null ? DisplayStyle.Flex : DisplayStyle.None;
 
             if (equipmentDatabase.IsBowEquipped())
@@ -469,6 +479,67 @@ namespace AF
                        {
                            target.style.backgroundColor = originalColor;
                        });
+        }
+
+        public enum ControlKey
+        {
+            None,
+            Move,
+            Interact,
+            Sprint,
+            Jump,
+            Dodge,
+            ToggleHands,
+            Attack,
+            BlockParryAim,
+            LockOn,
+            HeavyAttack,
+            MainMenu,
+        }
+
+        public void HighlightKey(ControlKey controlKey)
+        {
+            DisableHighlights();
+            VisualElement target;
+
+            if (Gamepad.current != null)
+            {
+                target = GamepadActions.Q(controlKey.ToString());
+            }
+            else
+            {
+                target = KeyboardActions.Q(controlKey.ToString());
+            }
+            target.style.backgroundColor = highlightColor;
+            target.style.paddingBottom = 10;
+            target.style.paddingLeft = 10;
+            target.style.paddingTop = 10;
+            target.style.paddingRight = 10;
+        }
+
+        public void DisableHighlights()
+        {
+            foreach (ControlKey key in Enum.GetValues(typeof(ControlKey)))
+            {
+                VisualElement keyboardTarget = KeyboardActions.Q(key.ToString());
+                if (keyboardTarget != null)
+                {
+                    keyboardTarget.style.backgroundColor = new Color(255, 255, 255, 0);
+                    keyboardTarget.style.paddingBottom = 1;
+                    keyboardTarget.style.paddingLeft = 1;
+                    keyboardTarget.style.paddingTop = 1;
+                    keyboardTarget.style.paddingRight = 1;
+                }
+                VisualElement gamepadTarget = GamepadActions.Q(key.ToString());
+                if (gamepadTarget != null)
+                {
+                    gamepadTarget.style.backgroundColor = new Color(255, 255, 255, 0);
+                    gamepadTarget.style.paddingBottom = 1;
+                    gamepadTarget.style.paddingLeft = 1;
+                    gamepadTarget.style.paddingTop = 1;
+                    gamepadTarget.style.paddingRight = 1;
+                }
+            }
         }
 
     }

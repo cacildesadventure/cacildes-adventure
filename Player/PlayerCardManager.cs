@@ -59,9 +59,8 @@ namespace AF
             {
                 playerManager.UpdateAnimatorOverrideControllerClip("Cacildes - Special Attack - 1", card.clip);
                 playerManager.RefreshAnimationOverrideState();
+                BeginSpecialAttack();
             }
-
-            BeginSpecialAttack();
 
             return true;
         }
@@ -154,6 +153,10 @@ namespace AF
 
         public Damage CombineDamageWithCard(Damage baseDamage)
         {
+            if (baseDamage.physical > 0)
+            {
+                baseDamage.physical += currentCard.cardDamage.physical;
+            }
 
             if (baseDamage.fire > 0)
             {

@@ -30,7 +30,11 @@ namespace AF
             while (elapsed < duration)
             {
                 float forceMagnitude = Mathf.Lerp(pushForce, 0f, elapsed / duration);
-                characterManager.characterController.Move(forceDirection * forceMagnitude * Time.deltaTime);
+
+                if (characterManager.characterCombatController.enabled)
+                {
+                    characterManager.characterController.Move(forceDirection * forceMagnitude * Time.deltaTime);
+                }
                 elapsed += Time.deltaTime;
                 yield return null;
             }

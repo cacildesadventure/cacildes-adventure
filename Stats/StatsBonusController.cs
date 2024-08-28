@@ -31,6 +31,7 @@ namespace AF.Stats
         public float lightningDefenseBonus = 0;
         public float magicDefenseBonus = 0;
         public float darkDefenseBonus = 0;
+        public float waterDefenseBonus = 0;
         public float additionalCoinPercentage = 0;
         public int parryPostureDamageBonus = 0;
         public float parryPostureWindowBonus = 0;
@@ -54,6 +55,7 @@ namespace AF.Stats
         public float weightPenalty = 0f;
         public int equipmentPoise = 0;
         public float equipmentPhysicalDefense = 0;
+        public bool ignoreWeaponRequirements = false;
 
         [Header("Status Controller")]
         public StatusController statusController;
@@ -96,20 +98,32 @@ namespace AF.Stats
             {
                 if (item != null && item.statusEffectCancellationRates != null && item.statusEffectCancellationRates.Length > 0)
                 {
-                    foreach (var statusEffectCancellationRate in item.statusEffectCancellationRates)
-                    {
-                        if (statusEffectCancellationRates.ContainsKey(statusEffectCancellationRate.statusEffect))
-                        {
-                            statusEffectCancellationRates[statusEffectCancellationRate.statusEffect] += statusEffectCancellationRate.amountToCancelPerSecond;
-                        }
-                        else
-                        {
-                            statusEffectCancellationRates.Add(statusEffectCancellationRate.statusEffect, statusEffectCancellationRate.amountToCancelPerSecond);
-                        }
-                    }
+                    EvaluateItemResistance(item.statusEffectCancellationRates);
                 }
             }
 
+            foreach (var item in equipmentDatabase.shields)
+            {
+                if (item != null && item.statusEffectCancellationRates != null && item.statusEffectCancellationRates.Length > 0)
+                {
+                    EvaluateItemResistance(item.statusEffectCancellationRates);
+                }
+            }
+        }
+
+        void EvaluateItemResistance(StatusEffectCancellationRate[] itemStatusEffectCancellationRates)
+        {
+            foreach (var statusEffectCancellationRate in itemStatusEffectCancellationRates)
+            {
+                if (statusEffectCancellationRates.ContainsKey(statusEffectCancellationRate.statusEffect))
+                {
+                    statusEffectCancellationRates[statusEffectCancellationRate.statusEffect] += statusEffectCancellationRate.amountToCancelPerSecond;
+                }
+                else
+                {
+                    statusEffectCancellationRates.Add(statusEffectCancellationRate.statusEffect, statusEffectCancellationRate.amountToCancelPerSecond);
+                }
+            }
         }
 
         void UpdateWeightPenalty()
@@ -258,7 +272,7 @@ namespace AF.Stats
         {
 
             healthBonus = magicBonus = staminaBonus = vitalityBonus = enduranceBonus = strengthBonus = dexterityBonus = intelligenceBonus = 0;
-            fireDefenseBonus = frostDefenseBonus = lightningDefenseBonus = magicDefenseBonus = darkDefenseBonus = discountPercentage = spellDamageBonusMultiplier = 0;
+            fireDefenseBonus = frostDefenseBonus = lightningDefenseBonus = magicDefenseBonus = darkDefenseBonus = waterDefenseBonus = discountPercentage = spellDamageBonusMultiplier = 0;
             reputationBonus = parryPostureDamageBonus = postureBonus = movementSpeedBonus = 0;
 
             parryPostureWindowBonus = staminaRegenerationBonus = postureDecreaseRateBonus = projectileMultiplierBonus = backStabAngleBonus = 0f;
@@ -288,6 +302,7 @@ namespace AF.Stats
                 lightningDefenseBonus += equipment.lightningDefense;
                 magicDefenseBonus += equipment.magicDefense;
                 darkDefenseBonus += equipment.darkDefense;
+                waterDefenseBonus += equipment.waterDefense;
                 reputationBonus += equipment.reputationBonus;
                 discountPercentage += equipment.discountPercentage;
                 postureBonus += equipment.postureBonus;
@@ -316,6 +331,7 @@ namespace AF.Stats
                 lightningDefenseBonus += accessory?.lightningDefense ?? 0;
                 magicDefenseBonus += accessory?.magicDefense ?? 0;
                 darkDefenseBonus += accessory?.darkDefense ?? 0;
+                waterDefenseBonus += accessory?.waterDefense ?? 0;
                 reputationBonus += accessory?.reputationBonus ?? 0;
                 parryPostureDamageBonus += accessory?.postureDamagePerParry ?? 0;
 
@@ -427,6 +443,15 @@ namespace AF.Stats
             this.strengthBonusFromConsumable = value;
             this.dexterityBonusFromConsumable = value;
             this.intelligenceBonusFromConsumable = value;
+        }
+
+        /// <summary>
+        /// Unity Event
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetIgnoreNextWeaponToEquipRequirements(bool value)
+        {
+            ignoreWeaponRequirements = value;
         }
     }
 }

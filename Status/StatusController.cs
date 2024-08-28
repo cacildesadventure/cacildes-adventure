@@ -150,6 +150,7 @@ namespace AF.StatusEffects
         public float GetMaximumStatusResistanceBeforeSufferingStatusEffect(StatusEffect statusEffect, bool useResistanceBonuses)
         {
             float resistance = 0;
+
             if (statusEffectResistances.ContainsKey(statusEffect))
             {
                 resistance += statusEffectResistances[statusEffect];

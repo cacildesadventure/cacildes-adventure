@@ -66,6 +66,11 @@ namespace AF
             return playerStatsBonusController.darkDefenseBonus;
         }
 
+        public float GetWaterDefense()
+        {
+            return playerStatsBonusController.waterDefenseBonus;
+        }
+
         public float GetFireDefense()
         {
             return playerStatsBonusController.fireDefenseBonus;

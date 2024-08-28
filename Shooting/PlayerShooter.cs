@@ -25,6 +25,7 @@ namespace AF.Shooting
         public PlayerStatsDatabase playerStatsDatabase;
         public EquipmentDatabase equipmentDatabase;
         public UIDocumentPlayerHUDV2 uIDocumentPlayerHUDV2;
+        public GameSession gameSession;
 
         [Header("Aiming")]
         public GameObject aimingCamera;
@@ -426,12 +427,24 @@ namespace AF.Shooting
 
                 if (currentSpell != null)
                 {
+                    bool shouldDoubleDamage = false;
+
+                    Weapon currentWeapon = GetPlayerManager().attackStatManager.equipmentDatabase.GetCurrentWeapon();
+
+                    if (currentWeapon != null)
+                    {
+                        shouldDoubleDamage =
+                            currentWeapon.doubleDamageDuringNightTime && gameSession.IsNightTime() ||
+                            currentWeapon.doubleDamageDuringDayTime && !gameSession.IsNightTime();
+                    }
+
                     onDamageCollisionAbstractManager.damage.ScaleSpell(
                         GetPlayerManager().attackStatManager,
-                        GetPlayerManager().attackStatManager.equipmentDatabase.GetCurrentWeapon(),
+                        currentWeapon,
                         playerStatsDatabase.GetCurrentReputation(),
                         currentSpell.isFaithSpell,
-                        currentSpell.isHexSpell);
+                        currentSpell.isHexSpell,
+                        shouldDoubleDamage);
                 }
 
                 if (GetPlayerManager().statsBonusController.spellDamageBonusMultiplier > 0)
@@ -453,7 +466,8 @@ namespace AF.Shooting
                         GetPlayerManager().attackStatManager.equipmentDatabase.GetCurrentWeapon(),
                         playerStatsDatabase.GetCurrentReputation(),
                         currentSpell.isFaithSpell,
-                        currentSpell.isHexSpell);
+                        currentSpell.isHexSpell,
+                        gameSession);
                 }
 
                 if (GetPlayerManager().statsBonusController.spellDamageBonusMultiplier > 0)

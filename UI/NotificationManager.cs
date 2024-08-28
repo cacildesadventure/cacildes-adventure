@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.UIElements;
 
 namespace AF
@@ -67,6 +68,11 @@ namespace AF
         public void ShowNotification(string message)
         {
             ShowNotification(message, null);
+        }
+
+        public void ShowNotification(LocalizedString message)
+        {
+            ShowNotification(message.GetLocalizedString(), null);
         }
 
         public void ShowNotification(string message, Sprite sprite)

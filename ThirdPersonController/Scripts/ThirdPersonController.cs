@@ -269,6 +269,8 @@ namespace AF
 
             if (wasSwimming == false && isSwimming)
             {
+                playerManager.ResetStates();
+
                 swimDamageCooldownTimer = 0f;
                 playerManager.animator.SetTrigger("TriggerSwim");
                 swimmingWaterRippleFx.SetActive(true);
@@ -280,6 +282,8 @@ namespace AF
 
             if (isSwimming)
             {
+                canRotateCharacter = true;
+
                 swimDamageCooldownTimer += Time.deltaTime;
 
                 playerManager.staminaStatManager.DecreaseStamina(staminaDrainedPerSecondWhenSwimming * Time.deltaTime);

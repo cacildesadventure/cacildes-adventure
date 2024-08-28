@@ -36,14 +36,17 @@ namespace AF
 
         public override int GetMaxHealth()
         {
-            int value = playerStatsDatabase.maxHealth + playerStatsBonusController.healthBonus + (int)((playerStatsDatabase.vitality + playerStatsBonusController.vitalityBonus) * playerStatsDatabase.levelMultiplierForHealth);
+            int baseValue = Formulas.CalculateStatForLevel(
+                playerStatsDatabase.maxHealth + playerStatsBonusController.healthBonus,
+                playerStatsBonusController.GetCurrentVitality(),
+                playerStatsDatabase.levelMultiplierForHealth);
 
             if (hasHealthCutInHalf)
             {
-                return (int)value / 2;
+                return (int)baseValue / 2;
             }
 
-            return value;
+            return baseValue;
         }
 
 
@@ -63,7 +66,7 @@ namespace AF
 
         public float GetHealthPointsForGivenVitality(int vitality)
         {
-            return GetCurrentHealth() + (int)(vitality * playerStatsDatabase.levelMultiplierForHealth);
+            return Formulas.CalculateStatForLevel((int)GetCurrentHealth(), vitality, playerStatsDatabase.levelMultiplierForHealth);
         }
 
         public override void RestoreHealth(float value)

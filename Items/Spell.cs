@@ -36,6 +36,7 @@ namespace AF
         public int positiveReputationRequired = 0;
         public int negativeReputationRequired = 0;
 
+
         public string GetFormattedAppliedStatusEffects()
         {
             string result = "";

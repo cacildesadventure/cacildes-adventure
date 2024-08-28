@@ -46,7 +46,8 @@ namespace AF.Shooting
         /// </summary>
         public override void FireArrow()
         {
-            if (queuedProjectile == null || GetCharacterManager()?.targetManager?.currentTarget == null)
+            if (
+                queuedProjectile == null || GetCharacterManager()?.targetManager?.currentTarget == null)
             {
                 return;
             }
@@ -57,6 +58,11 @@ namespace AF.Shooting
 
         void FireProjectile(GameObject projectile, Transform origin, Transform lockOnTarget)
         {
+            if (projectile == null)
+            {
+                return;
+            }
+
             GameObject projectileInstance = Instantiate(projectile.gameObject, origin.position, Quaternion.identity);
             if (projectileInstance == null)
             {

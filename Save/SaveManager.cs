@@ -173,6 +173,7 @@ namespace AF
         void SaveSceneSettings(QuickSaveWriter quickSaveWriter)
         {
             quickSaveWriter.Write("sceneIndex", SceneManager.GetActiveScene().buildIndex);
+            quickSaveWriter.Write("sceneName", SceneManager.GetActiveScene().name);
             quickSaveWriter.Write("playerPosition", playerManager.transform.position);
             quickSaveWriter.Write("playerRotation", playerManager.transform.rotation);
         }
@@ -575,8 +576,16 @@ namespace AF
                 gameSession.currentGameIteration = currentGameIteration;
             }
 
-            quickSaveReader.TryRead<int>("sceneIndex", out int sceneIndex);
-            LoadingManager.Instance.BeginLoading(sceneIndex);
+            quickSaveReader.TryRead<string>("sceneName", out string sceneName);
+            if (!string.IsNullOrEmpty(sceneName))
+            {
+                LoadingManager.Instance.BeginLoading(sceneName);
+            }
+            else
+            {
+                quickSaveReader.TryRead<int>("sceneIndex", out int sceneIndex);
+                LoadingManager.Instance.BeginLoading(sceneIndex);
+            }
         }
 
         void LoadGameSessionSettings(QuickSaveReader quickSaveReader)

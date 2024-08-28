@@ -44,11 +44,13 @@ namespace AF
             {
                 root.Q<IMGUIContainer>("KeyboardIcon").style.display = DisplayStyle.None;
                 root.Q<IMGUIContainer>("GamepadIcon").style.display = DisplayStyle.Flex;
+                root.Q<IMGUIContainer>("XboxIcon").style.display = DisplayStyle.Flex;
             }
             else
             {
                 root.Q<IMGUIContainer>("KeyboardIcon").style.display = DisplayStyle.Flex;
                 root.Q<IMGUIContainer>("GamepadIcon").style.display = DisplayStyle.None;
+                root.Q<IMGUIContainer>("XboxIcon").style.display = DisplayStyle.None;
                 root.Q<IMGUIContainer>("KeyboardIcon").Q<Label>("KeyText").text = key;
             }
 

@@ -24,6 +24,7 @@ namespace AF.UI.EquipmentMenu
         public const string DEFENSE_LIGHTNING = "DefenseLightning";
         public const string DEFENSE_MAGIC = "DefenseMagic";
         public const string DEFENSE_DARKNESS = "DefenseDarkness";
+        public const string DEFENSE_WATER = "DefenseWater";
         public const string POISE = "Poise";
         public const string POSTURE = "Posture";
         public const string REPUTATION = "Reputation";
@@ -84,7 +85,8 @@ namespace AF.UI.EquipmentMenu
             root = uIDocument.rootVisualElement;
 
             var labelNames = new[] { LEVEL, VITALITY, ENDURANCE, STRENGTH, DEXTERITY, INTELLIGENCE,
-                        ATTACK, DEFENSE, DEFENSE_FIRE, DEFENSE_FROST, DEFENSE_LIGHTNING, DEFENSE_MAGIC, DEFENSE_DARKNESS, POISE, POSTURE, EQUIP_LOAD, REPUTATION, GOLD
+                        ATTACK, DEFENSE, DEFENSE_FIRE, DEFENSE_FROST, DEFENSE_LIGHTNING, DEFENSE_MAGIC, DEFENSE_DARKNESS,
+                        DEFENSE_WATER, POISE, POSTURE, EQUIP_LOAD, REPUTATION, GOLD
                 }.ToList();
 
             var attributesContainer = root.Q<VisualElement>("Footer");
@@ -146,12 +148,14 @@ namespace AF.UI.EquipmentMenu
             int baseLightningDefense = (int)defenseStatManager.GetLightningDefense();
             int baseMagicDefense = (int)defenseStatManager.GetMagicDefense();
             int baseDarknessDefense = (int)defenseStatManager.GetDarknessDefense();
+            int baseWaterDefense = (int)defenseStatManager.GetWaterDefense();
 
             int itemFireDefense = -1;
             int itemFrostDefense = -1;
             int itemLightningDefense = -1;
             int itemMagicDefense = -1;
             int itemDarknessDefense = -1;
+            int itemWaterDefense = -1;
             int basePoise = playerManager.characterPoise.GetMaxPoiseHits(); // playerPoiseController.GetMaxPoise();
             int itemPoise = 0;
 
@@ -173,8 +177,8 @@ namespace AF.UI.EquipmentMenu
                     itemLightningDefense = GetElementalDefenseFromItem(armorBase, WeaponElementType.Lightning);
                     itemMagicDefense = GetElementalDefenseFromItem(armorBase, WeaponElementType.Magic);
                     itemDarknessDefense = GetElementalDefenseFromItem(armorBase, WeaponElementType.Darkness);
+                    itemWaterDefense = GetElementalDefenseFromItem(armorBase, WeaponElementType.Water);
                 }
-
 
                 itemEquipLoad = GetEquipLoadFromItem(armorBase);
 
@@ -261,6 +265,11 @@ namespace AF.UI.EquipmentMenu
                 statsAndAttributesLabels[DEFENSE_DARKNESS],
                 baseDarknessDefense,
                 itemDarknessDefense);
+
+            UpdateElementalStatLabel(
+                statsAndAttributesLabels[DEFENSE_WATER],
+                baseWaterDefense,
+                itemWaterDefense);
 
             UpdateStatLabel(
                 statsAndAttributesLabels[POISE],
@@ -434,6 +443,7 @@ namespace AF.UI.EquipmentMenu
                 { WeaponElementType.Lightning, defenseStatManager.GetLightningDefense },
                 { WeaponElementType.Magic, defenseStatManager.GetMagicDefense },
                 { WeaponElementType.Darkness, defenseStatManager.GetDarknessDefense },
+                { WeaponElementType.Water, defenseStatManager.GetWaterDefense },
                 { WeaponElementType.None, defenseStatManager.GetDefenseAbsorption },
             };
 
@@ -449,6 +459,7 @@ namespace AF.UI.EquipmentMenu
                 { WeaponElementType.Lightning, GetDefenseValueForEquipmentType(armor, WeaponElementType.Lightning) },
                 { WeaponElementType.Magic, GetDefenseValueForEquipmentType(armor, WeaponElementType.Magic) },
                 { WeaponElementType.Darkness, GetDefenseValueForEquipmentType(armor, WeaponElementType.Darkness) },
+                { WeaponElementType.Water, GetDefenseValueForEquipmentType(armor, WeaponElementType.Water) },
                 { WeaponElementType.None, GetDefenseValueForEquipmentType(armor, WeaponElementType.None) }
             };
         }
@@ -462,6 +473,7 @@ namespace AF.UI.EquipmentMenu
                 { WeaponElementType.Lightning, armor => armor == null ? 0 :armor.lightningDefense },
                 { WeaponElementType.Magic, armor => armor == null ? 0 : armor.magicDefense },
                 { WeaponElementType.Darkness, armor => armor == null ? 0 : armor.darkDefense },
+                { WeaponElementType.Water, armor => armor == null ? 0 : armor.waterDefense },
                 { WeaponElementType.None, armor => armor == null ? 0 :armor.physicalDefense }
             };
 

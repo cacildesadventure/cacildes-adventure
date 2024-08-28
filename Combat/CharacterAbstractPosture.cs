@@ -116,6 +116,11 @@ namespace AF
                 onPostureBreakDamage?.Invoke();
             }
 
+            HandlePostureBreak();
+        }
+
+        public void HandlePostureBreak()
+        {
             currentPostureDamage = 0f;
             isStunned = true;
             characterBaseManager.health.PlayPostureBroke();

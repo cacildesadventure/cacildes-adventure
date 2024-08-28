@@ -153,6 +153,8 @@ namespace AF
                     return;
                 }
 
+                HandlePlayerReactionToEnemyAttack(damageOwner, character);
+
                 HandlePlayerArmorAttacks(damageOwner);
 
                 HandlePlayerRage();
@@ -284,13 +286,18 @@ namespace AF
         /// <param name="damage"></param>
         public void ApplyDamage(Damage damage)
         {
+            ApplyDamage(damage, true);
+        }
+
+        public void ApplyDamage(Damage damage, bool checkForPosture)
+        {
             if (!waitingForBackstab && damage.pushForce > 0 && character != null && character.characterPushController != null)
             {
                 var targetPos = character.transform.position - Camera.main.transform.position;
                 targetPos.y = 0;
                 character.characterPushController.ApplyForceSmoothly(
                     targetPos.normalized,
-                    Mathf.Clamp(damage.pushForce * pushForceAbsorption, 0, Mathf.Infinity) * 10,
+                    Mathf.Clamp(damage.pushForce * pushForceAbsorption, 0, Mathf.Infinity) * 2.5f,
                     .25f);
             }
 
@@ -322,7 +329,7 @@ namespace AF
                     onBackstabbed?.Invoke();
                     damageFromBackstab = true;
                 }
-                else
+                else if (checkForPosture)
                 {
                     bool isPostureBroken = character.characterPosture.TakePostureDamage(damage.postureDamage);
                     health.TakeDamage(GetTotalDamage(damage, isPostureBroken));
@@ -460,6 +467,17 @@ namespace AF
 
             return (int)(damage.physical + damage.fire
                 + damage.frost + damage.magic + damage.lightning + damage.darkness + damage.water);
+        }
+
+        void HandlePlayerReactionToEnemyAttack(CharacterBaseManager damageOwner, CharacterBaseManager target)
+        {
+            if (damageOwner is CharacterManager aiCharacter)
+            {
+                if (aiCharacter.characterCombatController.currentCombatAction != null && aiCharacter.characterCombatController.currentCombatAction.targetHitReaction != null)
+                {
+                    target.PlayBusyAnimationWithRootMotion(aiCharacter.characterCombatController.currentCombatAction.targetHitReaction.name);
+                }
+            }
         }
     }
 }

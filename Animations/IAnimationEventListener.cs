@@ -60,5 +60,8 @@ namespace AF.Animations
 
         public void OnCard();
 
+        public void OnExecuted();
+        public void OnExecuting();
+
     }
 }

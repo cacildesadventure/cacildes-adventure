@@ -48,6 +48,7 @@ namespace AF
         public PlayerAppearance playerAppearance;
         public RageManager rageManager;
         public PlayerCardManager playerCardManager;
+        public ExecutionerManager executionerManager;
         public UIDocumentPlayerHUDV2 uIDocumentPlayerHUDV2;
 
         [Header("Databases")]

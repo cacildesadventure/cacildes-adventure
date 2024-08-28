@@ -615,6 +615,8 @@ namespace AF.UI.EquipmentMenu
                 return;
             }
 
+            activeButton = focusedElement;
+
             switch (focusedElement)
             {
                 case var _ when focusedElement == weaponButtonSlot1:

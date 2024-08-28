@@ -113,7 +113,7 @@ namespace AF
             {
                 LogAnalytic(AnalyticsUtils.OnUIButtonClick("Github"));
 
-                Application.OpenURL("https://github.com/andrefcasimiro/cacildes-adventure");
+                Application.OpenURL("https://github.com/cacildesadventure/cacildes-adventure");
             }, soundbank);
 
             UIUtils.SetupButton(btnDiscord, () =>

@@ -275,7 +275,7 @@ namespace AF
                 value += jumpAttackBonuses;
             }
 
-            if (weapon.halveDamage)
+            if (weapon.halveDamage && equipmentDatabase.isTwoHanding)
             {
                 return (int)(value / 2);
             }
