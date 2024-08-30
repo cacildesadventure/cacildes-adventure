@@ -85,6 +85,16 @@ namespace AF
             }
         }
 
+        public void SetProgressIfHigher(int progress)
+        {
+            if (questProgress >= progress)
+            {
+                return;
+            }
+
+            SetProgress(progress);
+        }
+
         /// <summary>
         /// Unity Event
         /// </summary>

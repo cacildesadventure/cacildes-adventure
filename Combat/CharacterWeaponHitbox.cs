@@ -87,6 +87,8 @@ namespace AF
 
             if (trailRenderer != null)
             {
+                trailRenderer.Clear();
+
                 trailRenderer.enabled = true;
             }
 

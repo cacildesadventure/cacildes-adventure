@@ -123,6 +123,18 @@ namespace AF
 
                 questObjectiveEntry.style.opacity = 1;
 
+                if (idx == questParent.questProgress)
+                {
+                    questObjectiveEntry.Q<Label>("QuestObjectiveLabel").style.color = new Color(255, 194, 0);
+                    questObjectiveEntry.Q<Label>("QuestObjectiveLabel").style.unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold);
+                    questObjectiveEntry.Q<VisualElement>("QuestObjectiveIncomplete").style.unityBackgroundImageTintColor = new Color(255, 194, 0);
+                }
+
+                if (!isCompleted && idx > questParent.questProgress)
+                {
+                    questObjectiveEntry.style.opacity = 0.15f;
+                }
+
                 questObjectivesContainer.Add(questObjectiveEntry);
 
                 idx++;

@@ -256,8 +256,6 @@ namespace AF
             }
         }
 
-
-
         /// <summary>
         /// Unity Event
         /// 
@@ -265,7 +263,11 @@ namespace AF
         /// <param name="damage"></param>
         public void TakeDamage(Damage damage)
         {
+            TakeDamage(damage, true);
+        }
 
+        public void TakeDamage(Damage damage, bool callOnDamageReceivedEvent)
+        {
             if (hasFlatulence)
             {
                 onAttackedWhileWithFlatulence?.Invoke();
@@ -276,7 +278,7 @@ namespace AF
                 return;
             }
 
-            ApplyDamage(damage);
+            ApplyDamage(damage, true, callOnDamageReceivedEvent);
         }
 
         /// <summary>
@@ -286,10 +288,10 @@ namespace AF
         /// <param name="damage"></param>
         public void ApplyDamage(Damage damage)
         {
-            ApplyDamage(damage, true);
+            ApplyDamage(damage, true, true);
         }
 
-        public void ApplyDamage(Damage damage, bool checkForPosture)
+        public void ApplyDamage(Damage damage, bool checkForPosture, bool callOnDamageReceivedEvent)
         {
             if (!waitingForBackstab && damage.pushForce > 0 && character != null && character.characterPushController != null)
             {
@@ -433,7 +435,10 @@ namespace AF
                 onWaterDamage?.Invoke();
             }
 
-            onDamageReceived?.Invoke();
+            if (callOnDamageReceivedEvent)
+            {
+                onDamageReceived?.Invoke();
+            }
         }
 
         public void TakeDamagePercentage(float damagePercentage)
