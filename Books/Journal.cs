@@ -12,7 +12,7 @@ namespace AF
         public string author;
 
         public Transform journalPageContainer;
-        public List<JournalPage> pages = new();
+        [HideInInspector] public List<JournalPage> pages = new();
         public Color coverColor = new Color(58, 44, 33);
 
         [Header("Note Settings")]

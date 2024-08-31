@@ -242,6 +242,8 @@ namespace AF
 
                 ResetStates();
 
+                characterPosture.currentPostureDamage = 0;
+
                 if (defaultAnimationHash != -1)
                 {
                     animator.Play(defaultAnimationHash);

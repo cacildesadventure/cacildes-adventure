@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using AF.Characters;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -155,6 +157,34 @@ namespace AF
             }
 
             return prefix + subFolder + item.name;
+        }
+
+
+        public static CharacterManager GetClosestEnemy(PlayerManager playerManager, CharacterFaction playerFaction)
+        {
+            CharacterManager target = playerManager.lockOnManager.nearestLockOnTarget?.characterManager;
+            if (target == null)
+            {
+                // Get all characters in the scene
+                var allCharacters = MonoBehaviour.FindObjectsByType<CharacterManager>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+
+                // Filter characters by tag "Enemy"
+                var enemyCharacters = allCharacters.Where(character => character.CompareTag("Enemy"));
+
+                // Exclude the character that is the same as this character
+                var filteredCharacters = enemyCharacters.Where(_character => !_character.characterFactions.Contains(playerFaction));
+
+                // Sort characters by distance to the player
+                var closestCharacter = filteredCharacters.OrderBy(
+                    character => Vector3.Distance(playerManager.transform.position, character.transform.position))?.FirstOrDefault();
+
+                if (closestCharacter != null)
+                {
+                    target = closestCharacter;
+                }
+            }
+
+            return target;
         }
     }
 }

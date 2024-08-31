@@ -147,25 +147,38 @@ namespace AF.Health
 
             if (weaponDamage.statusEffects != null && weaponDamage.statusEffects.Length > 0)
             {
-                List<StatusEffectEntry> thisDamageStatusEffects = this.statusEffects.ToList();
+                List<StatusEffectEntry> updatedStatusEffects = new List<StatusEffectEntry>();
 
-                foreach (StatusEffectEntry statusEffectEntry in weaponDamage.statusEffects)
+                // First, copy all existing status effects
+                foreach (StatusEffectEntry existingEffect in this.statusEffects)
                 {
-                    int idx = thisDamageStatusEffects.FindIndex(x => x == statusEffectEntry);
+                    updatedStatusEffects.Add(new StatusEffectEntry() { amountPerHit = existingEffect.amountPerHit, statusEffect = existingEffect.statusEffect });
+                }
 
-                    if (idx != -1)
+                // Then, combine with weapon status effects
+                foreach (StatusEffectEntry weaponStatusEffectEntry in weaponDamage.statusEffects)
+                {
+                    StatusEffectEntry existingEffect = updatedStatusEffects.Find(x => x.statusEffect == weaponStatusEffectEntry.statusEffect);
+
+                    if (existingEffect != null)
                     {
-                        thisDamageStatusEffects[idx].amountPerHit += statusEffectEntry.amountPerHit;
+                        // Create a new entry with combined amount
+                        int index = updatedStatusEffects.IndexOf(existingEffect);
+                        updatedStatusEffects[index] = new StatusEffectEntry()
+                        {
+                            statusEffect = existingEffect.statusEffect,
+                            amountPerHit = existingEffect.amountPerHit + weaponStatusEffectEntry.amountPerHit
+                        };
                     }
                     else
                     {
-                        thisDamageStatusEffects.Add(statusEffectEntry);
+                        // Add a new copy of the weapon status effect
+                        updatedStatusEffects.Add(new StatusEffectEntry() { amountPerHit = weaponStatusEffectEntry.amountPerHit, statusEffect = weaponStatusEffectEntry.statusEffect });
                     }
                 }
 
-                this.statusEffects = thisDamageStatusEffects.ToArray();
+                this.statusEffects = updatedStatusEffects.ToArray();
             }
-
         }
 
         public void ScaleProjectile(AttackStatManager attackStatManager, Weapon currentWeapon)
