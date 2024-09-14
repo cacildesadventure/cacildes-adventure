@@ -1,5 +1,6 @@
 using GameAnalyticsSDK;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace AF
@@ -22,6 +23,9 @@ namespace AF
         public GameSession gameSession;
 
         VisualElement root;
+
+        // Tutorial
+        public readonly string tutorialSceneName = "Tutorials";
 
         void LogAnalytic(string eventName)
         {
@@ -82,7 +86,10 @@ namespace AF
 
             UIUtils.SetupButton(playTutorialButton, () =>
             {
-                //Player.instance.LoadScene(6, true);
+                saveManager.fadeManager.FadeIn(1f, () =>
+                {
+                    SceneManager.LoadScene(tutorialSceneName);
+                });
             }, soundbank);
 
             UIUtils.SetupButton(creditsButton, () =>

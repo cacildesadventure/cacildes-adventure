@@ -7,13 +7,11 @@ namespace AF
         [Header("Layer Options")]
         public LayerMask eventNavigatorCapturableLayer;
 
-        [Header("Settings")]
-        public int raycastDistance = 5;
-
         [Header("Components")]
         public Transform playerTransform;
         public UIManager uiManager;
         public MomentManager momentManager;
+        public GameSettings gameSettings;
 
         // Internal
         IEventNavigatorCapturable currentTarget;
@@ -37,7 +35,7 @@ namespace AF
         {
             bool hitSomething = Physics.Raycast(
                 Camera.main.transform.position,
-                Camera.main.transform.forward, out var hitInfo, raycastDistance, eventNavigatorCapturableLayer);
+                Camera.main.transform.forward, out var hitInfo, gameSettings.GetCameraDistance() + 1, eventNavigatorCapturableLayer);
 
             if (hitSomething)
             {

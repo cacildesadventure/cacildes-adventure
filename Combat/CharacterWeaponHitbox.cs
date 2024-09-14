@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AF.Combat;
 using AF.Health;
 using UnityEngine;
 using UnityEngine.Events;
@@ -18,6 +19,7 @@ namespace AF
 
         [Header("Components")]
         public CharacterBaseManager character;
+        PlayerManager playerManager;
 
         [Header("Tags To Ignore")]
         public List<string> tagsToIgnore = new();
@@ -27,14 +29,13 @@ namespace AF
         public AudioClip hitSfx;
         public AudioSource combatAudioSource;
 
-        readonly List<DamageReceiver> damageReceiversHit = new();
+        readonly List<IDamageable> damageReceiversHit = new();
 
         [Header("Events")]
         public UnityEvent onOpenHitbox;
         public UnityEvent onCloseHitbox;
         public UnityEvent onDamageInflicted;
         public UnityEvent onWeaponSpecial;
-        public UnityEvent onEnvironmentCollision;
 
         [Header("Character Weapon Addons")]
         public CharacterTwoHandRef characterTwoHandRef;
@@ -53,9 +54,12 @@ namespace AF
         // Useful for throwable weapon situation
         [HideInInspector] public bool shouldDisableHitboxOnStart = true;
 
+
+
         private void Awake()
         {
             ownColliders = GetComponents<BoxCollider>()?.ToList();
+            playerManager = character as PlayerManager;
         }
 
         void Start()
@@ -132,12 +136,6 @@ namespace AF
             onCloseHitbox?.Invoke();
         }
 
-        bool IsCharacterConfused()
-        {
-            return character != null && character.isConfused;
-        }
-
-
         public void OnTriggerEnter(Collider other)
         {
             if (HasWeaponCollisionManager())
@@ -150,67 +148,35 @@ namespace AF
                 return;
             }
 
-            if (other.TryGetComponent(out DamageReceiver damageReceiver) && IsValidDamageReceiver(damageReceiver))
+            if (other.TryGetComponent(out IDamageable damageable) && !damageReceiversHit.Contains(damageable))
             {
-                if (IsCharacterConfused())
+                damageReceiversHit.Add(damageable);
+                damageable.OnDamage(character, () =>
                 {
-                    damageReceiver = character.damageReceiver;
-                }
+                    onDamageInflicted?.Invoke();
 
-                HandleDamage(damageReceiver);
+                    if (hitSfx != null && canPlayHitSfx && character != null)
+                    {
+                        canPlayHitSfx = false;
+                        PlayHitSound();
+                    }
+                });
 
-                if (character is PlayerManager playerManager)
+                if (playerManager != null)
                 {
-                    HandlePlayerSpecificLogic(playerManager, damageReceiver);
+                    playerManager.playerCombatController.HandlePlayerAttack(damageable, weapon);
                 }
-
-                damageReceiversHit.Add(damageReceiver);
             }
         }
 
         private bool ShouldIgnoreCollision(Collider other)
         {
-            if (IsCharacterConfused())
-            {
-                return false;
-            }
-
             if (tagsToIgnore.Contains(other.tag))
             {
                 return true;
             }
 
-            if (!character.HasAttackDamage())
-            {
-                return true;
-            }
-
             return false;
-        }
-
-        private bool IsValidDamageReceiver(DamageReceiver damageReceiver)
-        {
-            // If character is confused, ignore the damage receiver as it'll be his own target
-            if (IsCharacterConfused())
-            {
-                return true;
-            }
-
-            return damageReceiver != null && damageReceiver.character != character && !damageReceiversHit.Contains(damageReceiver);
-        }
-
-        private void HandleDamage(DamageReceiver damageReceiver)
-        {
-            damageReceiver.HandleIncomingDamage(character, (incomingDamage) =>
-            {
-                onDamageInflicted?.Invoke();
-
-                if (hitSfx != null && canPlayHitSfx && character != null)
-                {
-                    canPlayHitSfx = false;
-                    PlayHitSound();
-                }
-            }, IsCharacterConfused());
         }
 
         private void PlayHitSound()
@@ -219,30 +185,6 @@ namespace AF
             {
                 combatAudioSource.pitch = Random.Range(0.9f, 1.1f);
                 soundbank.PlaySound(hitSfx, combatAudioSource);
-            }
-        }
-
-        private void HandlePlayerSpecificLogic(PlayerManager playerManager, DamageReceiver damageReceiver)
-        {
-            if (playerManager.playerBlockController.isCounterAttacking)
-            {
-                playerManager.playerBlockController.onCounterAttack?.Invoke();
-            }
-
-            damageReceiver?.health?.onDamageFromPlayer?.Invoke();
-
-            if (weapon != null && damageReceiver?.health?.weaponRequiredToKill != null && damageReceiver.health.weaponRequiredToKill == weapon)
-            {
-                damageReceiver.health.hasBeenHitWithRequiredWeapon = true;
-            }
-
-            if (weapon != null)
-            {
-                playerManager.attackStatManager.attackSource = AttackStatManager.AttackSource.WEAPON;
-            }
-            else
-            {
-                playerManager.attackStatManager.attackSource = AttackStatManager.AttackSource.UNARMED;
             }
         }
 

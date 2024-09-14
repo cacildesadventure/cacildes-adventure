@@ -41,6 +41,8 @@ namespace AF
         IMGUIContainer actorSprite;
         VisualElement actorInfoContainer;
 
+        VisualElement gamepadIcon, xboxIcon;
+
         private void Awake()
         {
             this.gameObject.SetActive(false);
@@ -56,6 +58,8 @@ namespace AF
             this.actorSprite = this.root.Q<IMGUIContainer>("ActorSprite");
             this.pressToContinueLabel = this.root.Q<Label>("PressToContinue");
             this.actorInfoContainer = this.root.Q<VisualElement>("ActorInfoContainer");
+            this.gamepadIcon = this.root.Q<VisualElement>("GamepadIcon");
+            this.xboxIcon = this.root.Q<VisualElement>("XboxIcon");
 
             onEnableEvent?.Invoke();
         }
@@ -133,6 +137,13 @@ namespace AF
             {
                 string oldText = pressToContinueLabel.text;
                 pressToContinueLabel.text = "E) " + oldText;
+                gamepadIcon.style.display = DisplayStyle.None;
+                xboxIcon.style.display = DisplayStyle.None;
+            }
+            else
+            {
+                gamepadIcon.style.display = DisplayStyle.Flex;
+                xboxIcon.style.display = DisplayStyle.Flex;
             }
 
             if (character != null && string.IsNullOrEmpty(character.name) == false)

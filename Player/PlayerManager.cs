@@ -115,11 +115,6 @@ namespace AF
             attackStatManager.ResetStates();
         }
 
-        public override bool HasAttackDamage()
-        {
-            return true;
-        }
-
         public override Damage GetAttackDamage()
         {
             Damage attackDamage = attackStatManager.GetAttackDamage();

@@ -217,5 +217,29 @@ namespace AF.Health
             this.poiseDamage = Utils.ScaleWithCurrentNewGameIteration(this.poiseDamage, gameSession.currentGameIteration, gameSession.newGamePlusScalingFactor);
             this.postureDamage = Utils.ScaleWithCurrentNewGameIteration(this.postureDamage, gameSession.currentGameIteration, gameSession.newGamePlusScalingFactor);
         }
+
+        public Damage Copy()
+        {
+            Damage newDamage = new()
+            {
+                physical = this.physical,
+                fire = this.fire,
+                frost = this.frost,
+                lightning = this.lightning,
+                magic = this.magic,
+                darkness = this.darkness,
+                water = this.water,
+                canNotBeParried = this.canNotBeParried,
+                damageType = this.damageType,
+                ignoreBlocking = this.ignoreBlocking,
+                poiseDamage = this.poiseDamage,
+                postureDamage = this.postureDamage,
+                pushForce = this.pushForce,
+                weaponAttackType = this.weaponAttackType,
+                statusEffects = this.statusEffects
+            };
+
+            return newDamage;
+        }
     }
 }

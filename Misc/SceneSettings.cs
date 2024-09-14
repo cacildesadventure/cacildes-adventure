@@ -126,6 +126,30 @@ namespace AF
             onFinish?.Invoke();
         }
 
+        public IEnumerator DisplaySceneNameCoroutine(string sceneName)
+        {
+            {
+                sceneNameDocument.rootVisualElement.Q<Label>().text = sceneName;
+
+                DOTween.To(
+                      () => sceneNameDocument.rootVisualElement.contentContainer.style.opacity.value,
+                      (value) => sceneNameDocument.rootVisualElement.contentContainer.style.opacity = value,
+                      1,
+                      1f
+                );
+
+                yield return new WaitForSeconds(displaySceneNameDuration);
+
+                DOTween.To(
+                      () => sceneNameDocument.rootVisualElement.contentContainer.style.opacity.value,
+                      (value) => sceneNameDocument.rootVisualElement.contentContainer.style.opacity = value,
+                      0,
+                      1f
+                );
+
+            }
+        }
+
         /// <summary>
         /// Unity Event
         /// </summary>

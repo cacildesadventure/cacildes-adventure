@@ -1,3 +1,5 @@
+using System;
+using AF.Combat;
 using AF.Health;
 using UnityEngine;
 using UnityEngine.Events;
@@ -6,7 +8,7 @@ using UnityEngine.Rendering;
 namespace AF
 {
 
-    public class DamageReceiver : MonoBehaviour
+    public class DamageReceiver : MonoBehaviour, IDamageable
     {
         public readonly int hashBackstabExecuted = Animator.StringToHash("AI Humanoid - Backstabbed");
 
@@ -39,6 +41,21 @@ namespace AF
         public bool damageOnDodge = false;
         public bool waitingForBackstab = false;
         public bool hasFlatulence = false;
+
+
+        public void OnDamage(CharacterBaseManager attacker, Action onDamageInflicted)
+        {
+            // Don't allow character to hit itself if not confused
+            if (character.isConfused == false && attacker == character)
+            {
+                return;
+            }
+
+            HandleIncomingDamage(attacker, (incomingDamage) =>
+            {
+                onDamageInflicted();
+            }, character.isConfused);
+        }
 
 
         /// <summary>
@@ -484,5 +501,6 @@ namespace AF
                 }
             }
         }
+
     }
 }

@@ -338,7 +338,7 @@ namespace AF
             }
 
             return (int)Mathf.Ceil((playerStatsDatabase.strength + playerManager.statsBonusController.strengthBonus)
-            * levelMultiplier * scalingDictionary[weapon.strengthScaling.ToString()] / 2);
+            * levelMultiplier * scalingDictionary[weapon.strengthScaling.ToString()] / 1.5f);
         }
 
         public float GetDexterityBonusFromWeapon(Weapon weapon)
@@ -349,13 +349,13 @@ namespace AF
             }
 
             return (int)Mathf.Ceil((playerStatsDatabase.dexterity + playerManager.statsBonusController.dexterityBonus)
-                * levelMultiplier * scalingDictionary[weapon.dexterityScaling.ToString()] / 2);
+                * levelMultiplier * scalingDictionary[weapon.dexterityScaling.ToString()] / 1.5f);
         }
 
         public float GetIntelligenceBonusFromWeapon(Weapon weapon)
         {
             return (int)Mathf.Ceil((playerStatsDatabase.intelligence + playerManager.statsBonusController.intelligenceBonus)
-                * levelMultiplier * scalingDictionary[weapon.intelligenceScaling.ToString()] / 2);
+                * levelMultiplier * scalingDictionary[weapon.intelligenceScaling.ToString()] / 1.5f);
         }
 
 

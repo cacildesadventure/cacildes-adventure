@@ -65,8 +65,10 @@ namespace AF
         public float parryWindowBonus = 0f;
         public int parryPostureDamageBonus = 0;
 
-        public Damage FilterDamage(Damage incomingDamage)
+        public Damage FilterDamage(Damage originalDamage)
         {
+            Damage incomingDamage = originalDamage.Copy();
+
             if (physicalAbsorption != 1)
             {
                 incomingDamage.physical = (int)(incomingDamage.physical * physicalAbsorption);

@@ -132,7 +132,7 @@ namespace AF.UI.EquipmentMenu
             int baseStrength = playerStatsBonusController.GetCurrentStrength();
             int baseDexterity = playerStatsBonusController.GetCurrentDexterity();
             int baseIntelligence = playerStatsBonusController.GetCurrentIntelligence();
-            int baseReputation = playerStatsDatabase.GetCurrentReputation();
+            int baseReputation = playerStatsBonusController.GetCurrentReputation();
             int vitalityFromItem = 0;
             int enduranceFromItem = 0;
             int strengthFromItem = 0;

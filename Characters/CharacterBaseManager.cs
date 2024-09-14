@@ -96,7 +96,6 @@ namespace AF
         #endregion
 
         public abstract Damage GetAttackDamage();
-        public abstract bool HasAttackDamage();
 
         public bool IsFromSameFaction(CharacterBaseManager target)
         {

@@ -5,34 +5,72 @@ namespace AF.Tutorial
 
     public class TutorialManager : MonoBehaviour
     {
-        public TutorialSection[] tutorialSections;
+        [SerializeField] private TutorialSection[] tutorialSections;
+        [SerializeField] private TutorialSection startingTutorial;
 
-        TutorialSection activeTutorialSection;
+        private TutorialSection activeTutorialSection;
 
         void Start()
         {
-            activeTutorialSection = tutorialSections[0];
-            activeTutorialSection.Activate();
+            InitializeTutorials();
+        }
+
+        private void InitializeTutorials()
+        {
+            DisableAllTutorials();
+
+            if (startingTutorial != null)
+            {
+                activeTutorialSection = startingTutorial;
+            }
+            else if (tutorialSections.Length > 0)
+            {
+                activeTutorialSection = tutorialSections[0];
+            }
+
+            if (activeTutorialSection != null)
+            {
+                activeTutorialSection.gameObject.SetActive(true);
+                activeTutorialSection.Activate();
+            }
+        }
+
+        private void DisableAllTutorials()
+        {
+            foreach (var tutorial in tutorialSections)
+            {
+                if (tutorial != null)
+                {
+                    tutorial.gameObject.SetActive(false);
+                }
+            }
         }
 
         public void Advance()
         {
-            int idx = Array.IndexOf(tutorialSections, activeTutorialSection);
-
-            if (idx + 1 <= tutorialSections.Length - 1)
-            {
-                activeTutorialSection = tutorialSections[idx + 1];
-                activeTutorialSection.Activate();
-            }
+            ChangeTutorialSection(1);
         }
+
         public void Return()
         {
-            int idx = Array.IndexOf(tutorialSections, activeTutorialSection);
+            ChangeTutorialSection(-1);
+        }
 
-            if (idx - 1 >= 0)
+        private void ChangeTutorialSection(int direction)
+        {
+            int currentIndex = Array.IndexOf(tutorialSections, activeTutorialSection);
+
+            if (currentIndex >= 0)
             {
-                activeTutorialSection = tutorialSections[idx - 1];
-                activeTutorialSection.Activate();
+                int newIndex = currentIndex + direction;
+
+                if (newIndex >= 0 && newIndex < tutorialSections.Length)
+                {
+                    activeTutorialSection.gameObject.SetActive(false);
+                    activeTutorialSection = tutorialSections[newIndex];
+                    activeTutorialSection.gameObject.SetActive(true);
+                    activeTutorialSection.Activate();
+                }
             }
         }
     }

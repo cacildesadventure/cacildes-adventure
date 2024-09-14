@@ -14,6 +14,7 @@ namespace AF
     {
         [Header("Components")]
         public BGMManager bgmManager;
+        public PlayerCamera playerCamera;
 
         public UnityAction onLanguageChanged;
 
@@ -21,6 +22,7 @@ namespace AF
         public readonly string gameLanguageLabel = "GameLanguage";
         public readonly string graphicsQualityLabel = "GraphicsQuality";
         public readonly string cameraSensitivityLabel = "CameraSensitivity";
+        public readonly string cameraDistanceToPlayerLabel = "CameraDistanceToPlayer";
         public readonly string musicVolumeLabel = "MusicVolume";
         public readonly string displayPlayerHUDLabel = "DisplayPlayerHUD";
 
@@ -39,6 +41,7 @@ namespace AF
 
         [Header("Localization")]
         public LocalizedString CameraSensitivityLabel; // Camera Sensitivity ({0})
+        public LocalizedString CameraDistanceLabel; // Camera Distance ({0})
         public LocalizedString MusicVolumeLabel; // Music Volume ({0})
 
         public LocalizedString JumpLabel; // Jump
@@ -48,7 +51,6 @@ namespace AF
         public LocalizedString SprintLabel; // Sprint
         public LocalizedString Action; // Action
         public LocalizedString Customize; // Customize
-
 
         public void SetupRefs(VisualElement root)
         {
@@ -89,6 +91,7 @@ namespace AF
 
             RadioButtonGroup graphicsOptions = root.Q<RadioButtonGroup>(graphicsQualityLabel);
             Slider cameraSensitivity = root.Q<Slider>(cameraSensitivityLabel);
+            Slider cameraDistanceToPlayer = root.Q<Slider>(cameraDistanceToPlayerLabel);
             Slider musicVolumeSlider = root.Q<Slider>(musicVolumeLabel);
             Toggle displayPlayerHUDToggle = root.Q<Toggle>(displayPlayerHUDLabel);
 
@@ -99,6 +102,18 @@ namespace AF
             {
                 gameSettings.SetGameQuality(ev.newValue);
             });
+
+            cameraDistanceToPlayer.RegisterValueChangedCallback(ev =>
+            {
+                gameSettings.SetCameraDistance(ev.newValue);
+                cameraDistanceToPlayer.label = String.Format(CameraDistanceLabel.GetLocalizedString(), ev.newValue);
+
+                playerCamera.UpdateCameraDistance();
+            });
+            cameraDistanceToPlayer.lowValue = gameSettings.minimumCameraDistanceToPlayer;
+            cameraDistanceToPlayer.highValue = gameSettings.maximumCameraDistanceToPlayer;
+            cameraDistanceToPlayer.value = gameSettings.GetCameraDistance();
+            cameraDistanceToPlayer.label = String.Format(CameraDistanceLabel.GetLocalizedString(), gameSettings.GetCameraDistance());
 
             cameraSensitivity.RegisterValueChangedCallback(ev =>
             {

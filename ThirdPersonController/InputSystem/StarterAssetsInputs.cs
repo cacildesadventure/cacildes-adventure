@@ -127,7 +127,6 @@ namespace AF
 			if (value.isPressed)
 			{
 				onMenuEvent?.Invoke();
-
 			}
 		}
 

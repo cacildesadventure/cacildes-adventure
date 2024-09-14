@@ -172,7 +172,7 @@ namespace AF
                 var enemyCharacters = allCharacters.Where(character => character.CompareTag("Enemy"));
 
                 // Exclude the character that is the same as this character
-                var filteredCharacters = enemyCharacters.Where(_character => !_character.characterFactions.Contains(playerFaction));
+                var filteredCharacters = enemyCharacters.Where(_character => !_character.characterFactions.Contains(playerFaction) && _character.health.GetCurrentHealth() > 0);
 
                 // Sort characters by distance to the player
                 var closestCharacter = filteredCharacters.OrderBy(

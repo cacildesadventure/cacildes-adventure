@@ -111,6 +111,7 @@ namespace AF
         public List<AnimationOverride> animationOverrides;
         [Tooltip("Optional")] public List<AnimationOverride> twoHandOverrides;
         [Tooltip("Optional")] public List<AnimationOverride> blockOverrides;
+        public bool useUpperLayerAnimations = false;
 
         [Header("Dual Wielding Options")]
         public bool halveDamage = false;
@@ -288,7 +289,7 @@ namespace AF
 
         public bool CanBeUpgradedFurther()
         {
-            return canBeUpgraded && weaponUpgrades != null && weaponUpgrades.Length > 0 && this.level > 0 && this.level <= weaponUpgrades.Length;
+            return canBeUpgraded && weaponUpgrades != null && weaponUpgrades.Length > 0 && this.level > 0 && this.level <= weaponUpgrades.Length - 1;
         }
 
         public string GetMaterialCostForNextLevel()

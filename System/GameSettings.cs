@@ -14,6 +14,10 @@ public class GameSettings : ScriptableObject
 
     public bool hasInitializedSettings = false;
 
+    public float minimumCameraDistanceToPlayer = 0;
+    public float defaultCameraDistanceToPlayer = 4;
+    public float maximumCameraDistanceToPlayer = 15;
+
     public float minimumMouseSensitivity = 0f;
     public float maximumMouseSensitivity = 10f;
 
@@ -22,6 +26,7 @@ public class GameSettings : ScriptableObject
     public readonly string GRAPHICS_QUALITY_KEY = "graphicsQuality";
     public readonly string MUSIC_VOLUME_KEY = "musicVolume";
     public readonly string MOUSE_SENSITIVITY_KEY = "mouseSensitivity";
+    public readonly string CAMERA_DISTANCE_KEY = "cameraDistance";
     public readonly string USE_CUSTOM_INPUTS_KEY = "useCustomInputs";
 
     public readonly string JUMP_OVERRIDE_BINDING_PAYLOAD_KEY = "JUMP_OVERRIDE_BINDING_PAYLOAD_KEY";
@@ -155,6 +160,12 @@ public class GameSettings : ScriptableObject
         EventManager.EmitEvent(EventMessages.ON_GRAPHICS_QUALITY_CHANGED);
     }
 
+
+    public void SetCameraDistance(float newValue)
+    {
+        PlayerPrefs.SetFloat(CAMERA_DISTANCE_KEY, newValue);
+    }
+
     public void SetCameraSensitivity(float newValue)
     {
         PlayerPrefs.SetFloat(MOUSE_SENSITIVITY_KEY, newValue);
@@ -180,6 +191,10 @@ public class GameSettings : ScriptableObject
     public int GetGraphicsQuality()
     {
         return PlayerPrefs.HasKey(GRAPHICS_QUALITY_KEY) ? PlayerPrefs.GetInt(GRAPHICS_QUALITY_KEY) : 3;
+    }
+    public float GetCameraDistance()
+    {
+        return PlayerPrefs.HasKey(CAMERA_DISTANCE_KEY) ? PlayerPrefs.GetFloat(CAMERA_DISTANCE_KEY) : defaultCameraDistanceToPlayer;
     }
     public float GetMouseSensitivity()
     {

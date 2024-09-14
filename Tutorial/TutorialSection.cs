@@ -1,6 +1,7 @@
 namespace AF.Tutorial
 {
     using UnityEngine;
+    using UnityEngine.Localization;
 
     public class TutorialSection : MonoBehaviour
     {
@@ -11,6 +12,10 @@ namespace AF.Tutorial
         public PlayerManager playerManager;
 
         public TutorialSpawnRef tutorialSpawnRef;
+
+        public LocalizedString tutorialName;
+        public SceneSettings sceneSettings;
+
 
         private void Awake()
         {
@@ -31,6 +36,11 @@ namespace AF.Tutorial
             else
             {
                 uIDocumentPlayerHUDV2.DisableHighlights();
+            }
+
+            if (tutorialName.IsEmpty == false)
+            {
+                StartCoroutine(sceneSettings.DisplaySceneNameCoroutine(tutorialName.GetLocalizedString()));
             }
         }
     }

@@ -167,10 +167,6 @@ namespace AF
         {
             return characterCombatController.GetCurrentDamage();
         }
-        public override bool HasAttackDamage()
-        {
-            return characterCombatController.currentCombatAction != null;
-        }
 
         /// <summary>
         /// Unity Event
@@ -214,7 +210,7 @@ namespace AF
             transform.rotation = initialRotation;
         }
 
-        void Revive()
+        public void Revive()
         {
             if (characterBossController.IsBoss() || !canRevive)
             {
@@ -248,7 +244,6 @@ namespace AF
                 {
                     animator.Play(defaultAnimationHash);
                 }
-
             }
         }
 

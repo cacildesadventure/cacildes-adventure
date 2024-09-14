@@ -23,6 +23,9 @@ namespace AF
         [Header("Events")]
         public UnityEvent onDyingInArena;
 
+        [Header("Options")]
+        public bool isTutorialScene = false;
+
 
         private void Awake()
         {
@@ -91,6 +94,12 @@ namespace AF
 
             if (GetCurrentHealth() <= 0)
             {
+                if (isTutorialScene)
+                {
+                    RestoreFullHealth();
+                    return;
+                }
+
                 if (value < 999 && playerStatsBonusController.chanceToRestoreHealthUponDeath && Random.Range(0, 1f) >= 0.5f)
                 {
                     RestoreHealthPercentage(50);

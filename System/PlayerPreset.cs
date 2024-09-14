@@ -70,6 +70,8 @@ namespace AF
         public int dexterity = 1;
         public int intelligence = 1;
         public int reputation = 1;
+        public int gold = 0;
+
 
         [Header("Quests")]
         public List<QuestParent> completedQuests = new();
@@ -98,6 +100,7 @@ namespace AF
             playerStatsDatabase.dexterity = dexterity;
             playerStatsDatabase.intelligence = intelligence;
             playerStatsDatabase.reputation = reputation;
+            playerStatsDatabase.gold = gold;
         }
 
         void LoadInventory()

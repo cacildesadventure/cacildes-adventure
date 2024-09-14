@@ -38,7 +38,7 @@ namespace AF.Animations
                 playerManager.playerWeaponsManager.leftHandHitbox.EnableHitbox();
             }
 
-            playerManager.thirdPersonController.canRotateCharacter = false;
+            DisableRotation();
         }
 
         public void CloseLeftWeaponHitbox()
@@ -65,7 +65,7 @@ namespace AF.Animations
                 playerManager.playerWeaponsManager.rightHandHitbox.EnableHitbox();
             }
 
-            playerManager.thirdPersonController.canRotateCharacter = false;
+            DisableRotation();
         }
 
         public void CloseRightWeaponHitbox()
@@ -88,7 +88,7 @@ namespace AF.Animations
                 playerManager.playerWeaponsManager.leftFootHitbox.EnableHitbox();
             }
 
-            playerManager.thirdPersonController.canRotateCharacter = false;
+            DisableRotation();
         }
 
         public void CloseLeftFootHitbox()
@@ -107,7 +107,7 @@ namespace AF.Animations
                 playerManager.playerWeaponsManager.rightFootHitbox.EnableHitbox();
             }
 
-            playerManager.thirdPersonController.canRotateCharacter = false;
+            DisableRotation();
         }
 
         public void CloseRightFootHitbox()
@@ -125,6 +125,11 @@ namespace AF.Animations
 
         public void DisableRotation()
         {
+            if (playerManager.equipmentDatabase.IsUsingUpperLayerAnimations())
+            {
+                return;
+            }
+
             playerManager.thirdPersonController.canRotateCharacter = false;
         }
 
