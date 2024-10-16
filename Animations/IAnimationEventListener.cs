@@ -63,5 +63,10 @@ namespace AF.Animations
         public void OnExecuted();
         public void OnExecuting();
 
+        public void ShowRifleWeapon();
+        public void HideRifleWeapon();
+
+        public void IsFetchingArrow();
+
     }
 }

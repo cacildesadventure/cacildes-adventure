@@ -13,4 +13,10 @@ namespace AF.Inventory
 
         [Range(0, 100)] public int chanceToGet = 100;
     }
+
+    [System.Serializable]
+    public class LootItemAmount : ItemAmount
+    {
+        public bool ignoreIfPlayerOwns = false;
+    }
 }

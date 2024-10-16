@@ -125,11 +125,6 @@ namespace AF.Animations
 
         public void DisableRotation()
         {
-            if (playerManager.equipmentDatabase.IsUsingUpperLayerAnimations())
-            {
-                return;
-            }
-
             playerManager.thirdPersonController.canRotateCharacter = false;
         }
 
@@ -308,6 +303,19 @@ namespace AF.Animations
         public void OnExecuting()
         {
             playerManager.executionerManager.OnExecuting();
+        }
+
+        public void ShowRifleWeapon()
+        {
+        }
+
+        public void HideRifleWeapon()
+        {
+        }
+
+        public void IsFetchingArrow()
+        {
+            playerManager.isBusy = false;
         }
     }
 }

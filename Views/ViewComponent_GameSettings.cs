@@ -88,7 +88,6 @@ namespace AF
                 }
             });
 
-
             RadioButtonGroup graphicsOptions = root.Q<RadioButtonGroup>(graphicsQualityLabel);
             Slider cameraSensitivity = root.Q<Slider>(cameraSensitivityLabel);
             Slider cameraDistanceToPlayer = root.Q<Slider>(cameraDistanceToPlayerLabel);
@@ -103,6 +102,11 @@ namespace AF
                 gameSettings.SetGameQuality(ev.newValue);
             });
 
+
+            cameraDistanceToPlayer.lowValue = gameSettings.minimumCameraDistanceToPlayer;
+            cameraDistanceToPlayer.highValue = gameSettings.maximumCameraDistanceToPlayer;
+            cameraDistanceToPlayer.value = gameSettings.GetCameraDistance();
+
             cameraDistanceToPlayer.RegisterValueChangedCallback(ev =>
             {
                 gameSettings.SetCameraDistance(ev.newValue);
@@ -110,36 +114,38 @@ namespace AF
 
                 playerCamera.UpdateCameraDistance();
             });
-            cameraDistanceToPlayer.lowValue = gameSettings.minimumCameraDistanceToPlayer;
-            cameraDistanceToPlayer.highValue = gameSettings.maximumCameraDistanceToPlayer;
-            cameraDistanceToPlayer.value = gameSettings.GetCameraDistance();
+
             cameraDistanceToPlayer.label = String.Format(CameraDistanceLabel.GetLocalizedString(), gameSettings.GetCameraDistance());
+
+
+            cameraSensitivity.lowValue = gameSettings.minimumMouseSensitivity;
+            cameraSensitivity.highValue = gameSettings.maximumMouseSensitivity;
+            cameraSensitivity.value = gameSettings.GetMouseSensitivity();
+            cameraSensitivity.label = String.Format(CameraSensitivityLabel.GetLocalizedString(), gameSettings.GetMouseSensitivity());
 
             cameraSensitivity.RegisterValueChangedCallback(ev =>
             {
                 gameSettings.SetCameraSensitivity(ev.newValue);
                 cameraSensitivity.label = String.Format(CameraSensitivityLabel.GetLocalizedString(), ev.newValue);
             });
-            cameraSensitivity.lowValue = gameSettings.minimumMouseSensitivity;
-            cameraSensitivity.highValue = gameSettings.maximumMouseSensitivity;
-            cameraSensitivity.value = gameSettings.GetMouseSensitivity();
-            cameraSensitivity.label = String.Format(CameraSensitivityLabel.GetLocalizedString(), gameSettings.GetMouseSensitivity());
+
+            musicVolumeSlider.lowValue = 0f;
+            musicVolumeSlider.highValue = 1f;
+            musicVolumeSlider.value = gameSettings.GetMusicVolume();
+            musicVolumeSlider.label = String.Format(MusicVolumeLabel.GetLocalizedString(), gameSettings.GetMusicVolume());
 
             musicVolumeSlider.RegisterValueChangedCallback(ev =>
             {
                 gameSettings.SetMusicVolume(ev.newValue);
                 musicVolumeSlider.label = String.Format(MusicVolumeLabel.GetLocalizedString(), ev.newValue);
             });
-            musicVolumeSlider.lowValue = 0f;
-            musicVolumeSlider.highValue = 1f;
-            musicVolumeSlider.value = gameSettings.GetMusicVolume();
-            musicVolumeSlider.label = String.Format(MusicVolumeLabel.GetLocalizedString(), gameSettings.GetMusicVolume());
+
+            displayPlayerHUDToggle.value = gameSettings.ShouldShowPlayerHUD();
 
             displayPlayerHUDToggle.RegisterValueChangedCallback(ev =>
             {
                 gameSettings.SetShouldShowPlayerHUD(ev.newValue);
             });
-            displayPlayerHUDToggle.value = gameSettings.ShouldShowPlayerHUD();
 
             SetupKeyRebindingRefs(root);
         }

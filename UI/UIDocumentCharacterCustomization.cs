@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using GameAnalyticsSDK;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace AF
@@ -165,6 +166,7 @@ namespace AF
             {
                 playerAppearance.UpdatePlayerName(ev.newValue);
             });
+            nameInput.SetEnabled(Gamepad.current == null);
         }
 
         void SetupColorSliders()

@@ -4,6 +4,7 @@ using AF.Events;
 using AF.StatusEffects;
 using TigerForge;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 using static AF.ArmorBase;
 
 namespace AF.Stats
@@ -50,6 +51,11 @@ namespace AF.Stats
         public bool canRage = false;
         public float backStabAngleBonus = 0f;
         public bool shouldRegenerateMana = false;
+        public bool increaseAttackPowerWhenUnarmed = false;
+        public float twoHandAttackBonusMultiplier = 0f;
+        public float slashDamageMultiplier = 0f;
+        public float pierceDamageMultiplier = 0f;
+        public float bluntDamageMultiplier = 0f;
 
         [Header("Equipment Modifiers")]
         public float weightPenalty = 0f;
@@ -63,9 +69,13 @@ namespace AF.Stats
         [Header("Databases")]
         public EquipmentDatabase equipmentDatabase;
         public PlayerStatsDatabase playerStatsDatabase;
+        public UIDocumentPlayerGold uIDocumentPlayerGold;
+        public NotificationManager notificationManager;
 
         [Header("Status Effect Resistances")]
         public Dictionary<StatusEffect, float> statusEffectCancellationRates = new();
+
+
 
         private void Awake()
         {
@@ -277,7 +287,9 @@ namespace AF.Stats
 
             parryPostureWindowBonus = staminaRegenerationBonus = postureDecreaseRateBonus = projectileMultiplierBonus = backStabAngleBonus = 0f;
 
-            shouldRegenerateMana = chanceToRestoreHealthUponDeath = canRage = chanceToNotLoseItemUponConsumption = false;
+            shouldRegenerateMana = chanceToRestoreHealthUponDeath = canRage = chanceToNotLoseItemUponConsumption = increaseAttackPowerWhenUnarmed = false;
+
+            twoHandAttackBonusMultiplier = slashDamageMultiplier = pierceDamageMultiplier = bluntDamageMultiplier = 0f;
         }
 
         void ApplyWeaponAttributes(Weapon currentWeapon)
@@ -347,14 +359,42 @@ namespace AF.Stats
                 postureDecreaseRateBonus += accessory?.postureDecreaseRateBonus ?? 0;
 
 
-                if (accessory != null && accessory.chanceToRestoreHealthUponDeath)
+                if (accessory != null)
                 {
-                    chanceToRestoreHealthUponDeath = true;
-                }
+                    if (accessory.chanceToRestoreHealthUponDeath)
+                    {
+                        chanceToRestoreHealthUponDeath = true;
+                    }
 
-                if (accessory != null && accessory.chanceToNotLoseItemUponConsumption)
-                {
-                    chanceToNotLoseItemUponConsumption = true;
+                    if (accessory.chanceToNotLoseItemUponConsumption)
+                    {
+                        chanceToNotLoseItemUponConsumption = true;
+                    }
+
+                    if (accessory.increaseAttackPowerWhenUnarmed)
+                    {
+                        increaseAttackPowerWhenUnarmed = true;
+                    }
+
+                    if (accessory.twoHandAttackBonusMultiplier > 0)
+                    {
+                        twoHandAttackBonusMultiplier += accessory.twoHandAttackBonusMultiplier;
+                    }
+
+                    if (accessory.slashDamageMultiplier > 0)
+                    {
+                        slashDamageMultiplier += accessory.slashDamageMultiplier;
+                    }
+
+                    if (accessory.bluntDamageMultiplier > 0)
+                    {
+                        bluntDamageMultiplier += accessory.bluntDamageMultiplier;
+                    }
+
+                    if (accessory.pierceDamageMultiplier > 0)
+                    {
+                        pierceDamageMultiplier += accessory.pierceDamageMultiplier;
+                    }
                 }
             }
         }
@@ -452,6 +492,27 @@ namespace AF.Stats
         public void SetIgnoreNextWeaponToEquipRequirements(bool value)
         {
             ignoreWeaponRequirements = value;
+        }
+
+        public void ReturnGoldAndResetStats()
+        {
+
+            int goldAmount = LevelUtils.GetRequiredExperienceForLevel(playerStatsDatabase.GetCurrentLevel());
+
+            playerStatsDatabase.vitality = 1;
+            playerStatsDatabase.endurance = 1;
+            playerStatsDatabase.intelligence = 1;
+            playerStatsDatabase.strength = 1;
+            playerStatsDatabase.dexterity = 1;
+
+            uIDocumentPlayerGold.AddGold(goldAmount);
+
+            bool isPortuguese = LocalizationSettings.SelectedLocale.Identifier.Code == "pt";
+
+            notificationManager.ShowNotification(
+                isPortuguese ? "Os teus atributos foram resetados" : "Your stats have been reset",
+                notificationManager.systemSuccess
+            );
         }
     }
 }

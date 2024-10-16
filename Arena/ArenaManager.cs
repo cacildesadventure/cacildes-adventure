@@ -290,6 +290,11 @@ namespace AF.Arena
 
         void SpawnPowerup()
         {
+            if (!gameSession.isParticipatingInArenaEvent)
+            {
+                return;
+            }
+
             // Teleport near player
             NavMesh.SamplePosition(
                 playerManager.transform.position + playerManager.transform.forward * -2f, out NavMeshHit rightHit, 10f, NavMesh.AllAreas);

@@ -33,18 +33,37 @@ namespace AF
         // Flags
         bool hasCollided = false;
 
-        CharacterBaseManager shooter;
+        public CharacterBaseManager shooter;
 
 
         [Header("Collision Options")]
         public bool collideWithAnything = false;
         public UnityEvent onAnyCollision;
 
+        Vector3 previousPosition;
+
         private void OnEnable()
         {
+
             onFired?.Invoke();
 
             StartCoroutine(HandleOnFiredAfter_Coroutine());
+        }
+
+        private void Update()
+        {
+            // Get the direction of movement by comparing the current position to the previous position
+            Vector3 direction = (transform.position - previousPosition).normalized;
+
+            // Only update the rotation if there's movement
+            if (direction != Vector3.zero)
+            {
+                // Rotate the arrow to face the direction of movement
+                transform.rotation = Quaternion.LookRotation(direction);
+            }
+
+            // Update the previous position for the next frame
+            previousPosition = transform.position;
         }
 
         private void OnDisable()
@@ -121,8 +140,8 @@ namespace AF
             {
                 damage.ScaleDamageForNewGamePlus(enemy.gameSession);
             }
-
             damageReceiver.TakeDamage(damage);
+
 
             if (shooter != null
                 && damageReceiver?.character is CharacterManager characterManager

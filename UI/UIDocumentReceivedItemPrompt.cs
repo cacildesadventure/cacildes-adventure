@@ -65,6 +65,7 @@ namespace AF
             // Set the starting position below the screen
             Vector3 startPosition = new Vector3(cardContainer.contentContainer.transform.position.x,
             cardContainer.contentContainer.transform.position.y - 10, cardContainer.contentContainer.transform.position.z);
+
             // Set the ending position (original position)
             Vector3 endPosition = cardContainer.contentContainer.transform.position;
             DOTween.To(() => startPosition, position => cardContainer.contentContainer.transform.position = position, endPosition, 0.5f);

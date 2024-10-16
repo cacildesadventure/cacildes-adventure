@@ -17,7 +17,10 @@ namespace AF
             try
             {
                 string saveFolderPath = Path.Combine(Application.persistentDataPath, saveFilesLocation);
-                bool filesExist = Directory.Exists(saveFolderPath) && Directory.EnumerateFiles(saveFolderPath).Any();
+                bool filesExist = Directory.Exists(saveFolderPath) && Directory
+                    .EnumerateFiles(saveFolderPath)
+                    .Where(fileName => !fileName.Contains("steam_autocloud.vdf"))
+                    .Any();
                 return filesExist;
             }
             catch (Exception e)
@@ -45,7 +48,21 @@ namespace AF
             }
 
             // Sort files by creation time in descending order
-            FileInfo lastFile = files.Where(x => x.Name.Contains(".json")).OrderByDescending(f => f.CreationTime).First();
+            var fileList = files
+             .Where(x =>
+                 x.Name.Contains(".json") && !x.Name.Contains("steam_autocloud.vdf"));
+
+            if (fileList.Count() <= 0)
+            {
+                return "";
+            }
+
+            var lastFile = fileList.OrderByDescending(f => f.CreationTime)?.First();
+
+            if (lastFile == null)
+            {
+                return "";
+            }
 
             return lastFile.Name.Replace(".json", ""); // Return the full path of the last file
         }

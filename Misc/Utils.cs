@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using AF.Characters;
+using AF.Combat;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -185,6 +186,13 @@ namespace AF
             }
 
             return target;
+        }
+
+        public static bool HasEnemyFighting()
+        {
+            return MonoBehaviour.FindObjectsByType<TargetManager>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Any(
+                x => x.currentTarget != null
+                && x.characterManager.health.GetCurrentHealth() > 0);
         }
     }
 }

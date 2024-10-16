@@ -83,9 +83,26 @@ namespace AF
             }
         }
 
+        float GetStaminaRegenerationRate()
+        {
+            float value = STAMINA_REGENERATION_RATE + playerStatsBonusController.staminaRegenerationBonus - negativeStaminaRegenerationBonus + STAMINA_REGENERATION_RATE_BONUS;
+
+            if (GetCurrentStaminaPercentage() <= 25)
+            {
+                value *= 1.75f;
+            }
+            else if (GetCurrentStaminaPercentage() <= 50)
+            {
+                value *= 1.25f;
+            }
+
+            return value;
+        }
+
         void HandleStaminaRegen()
         {
-            var finalRegenerationRate = STAMINA_REGENERATION_RATE + playerStatsBonusController.staminaRegenerationBonus - negativeStaminaRegenerationBonus + STAMINA_REGENERATION_RATE_BONUS;
+            var finalRegenerationRate = GetStaminaRegenerationRate();
+
 
             if (playerManager.characterBlockController.isBlocking)
             {

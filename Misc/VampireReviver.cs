@@ -17,6 +17,9 @@ namespace AF
 
         public CharacterManager characterManager;
 
+        [Header("Components")]
+        public EquipmentDatabase equipmentDatabase;
+
         public UnityEvent onRevival;
         public UnityEvent onStoppingRevival;
 
@@ -33,6 +36,14 @@ namespace AF
 
         public void OnEnable()
         {
+            Weapon playerWeapon = equipmentDatabase.GetCurrentWeapon();
+
+            if (playerWeapon != null && playerWeapon.isHolyWeapon)
+            {
+                this.gameObject.SetActive(false);
+                return;
+            }
+
             allowDamage = false;
 
             StartCoroutine(AllowDamage());

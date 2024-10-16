@@ -9,7 +9,7 @@ namespace AF
         [Header("Settings")]
         public bool shouldFaceTargetWhenBlockingAttack = true;
 
-        public new void BlockAttack(Damage damage)
+        public override void BlockAttack(Damage damage)
         {
             if (shouldFaceTargetWhenBlockingAttack)
             {
@@ -17,6 +17,9 @@ namespace AF
             }
 
             base.BlockAttack(damage);
+
+            // If is enemy, mark isBlocking as false, otherwise the enemy will always block player attacks repeatedly without exiting this guard state
+            isBlocking = false;
         }
 
         public override int GetPostureDamageFromParry()

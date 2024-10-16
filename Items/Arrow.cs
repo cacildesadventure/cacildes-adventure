@@ -7,6 +7,8 @@ namespace AF
     {
 
         public bool isBolt = false;
+        public bool isRifleBullet = false;
+        public bool loseUponFiring = true;
 
     }
 }

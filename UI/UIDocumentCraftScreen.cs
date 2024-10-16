@@ -278,7 +278,7 @@ namespace AF
                 var scrollItem = this.recipeItem.CloneTree();
 
                 scrollItem.Q<IMGUIContainer>("ItemIcon").style.backgroundImage = new StyleBackground(recipe.resultingItem?.sprite);
-                scrollItem.Q<Label>("ItemName").text = recipe.resultingItem?.GetName();
+                scrollItem.Q<Label>("ItemName").text = recipe.resultingItem?.GetName() + $" ({recipe.resultingAmount})";
 
                 scrollItem.Q<Label>("ItemDescription").text = GetItemDescription(recipe);
                 scrollItem.Q<Label>("ItemDescription").style.display = DisplayStyle.Flex;
@@ -431,8 +431,8 @@ namespace AF
             });
 
             soundbank.PlaySound(soundbank.craftSuccess);
-            playerManager.playerInventory.AddItem(recipe.resultingItem, 1);
-            notificationManager.ShowNotification(LocalizationSettings.StringDatabase.GetLocalizedString("UIDocuments", "Received") + " " + recipe.resultingItem?.GetName(), recipe.resultingItem?.sprite);
+            playerManager.playerInventory.AddItem(recipe.resultingItem, recipe.resultingAmount);
+            notificationManager.ShowNotification(LocalizationSettings.StringDatabase.GetLocalizedString("UIDocuments", "Received") + $" x{recipe.resultingAmount} " + recipe.resultingItem?.GetName(), recipe.resultingItem?.sprite);
 
             foreach (var ingredient in recipe.ingredients)
             {
@@ -523,43 +523,43 @@ namespace AF
             root.Q<Label>("MagicAttack").style.display = DisplayStyle.None;
             root.Q<Label>("DarknessAttack").style.display = DisplayStyle.None;
 
-            if (weapon.GetWeaponAttackForLevel(nextLevel) > 0)
+            if (weapon.GetWeaponAttackForLevel(playerManager.attackStatManager, nextLevel) > 0)
             {
                 root.Q<Label>("PhysicalAttack").style.display = DisplayStyle.Flex;
                 root.Q<Label>("PhysicalAttack").text = NextPhysicalDamage_LocalizedString.GetLocalizedString() + " "
-                    + weapon.GetWeaponAttackForLevel(weapon.level) + " > " + weapon.GetWeaponAttackForLevel(nextLevel);
+                    + weapon.GetWeaponAttackForLevel(playerManager.attackStatManager, weapon.level) + " > " + weapon.GetWeaponAttackForLevel(playerManager.attackStatManager, nextLevel);
             }
-            if (weapon.GetWeaponFireAttackForLevel(nextLevel) > 0)
+            if (weapon.GetWeaponFireAttackForLevel(playerManager.attackStatManager, nextLevel) > 0)
             {
                 root.Q<Label>("FireAttack").style.display = DisplayStyle.Flex;
                 root.Q<Label>("FireAttack").text = NextFireBonus_LocalizedString.GetLocalizedString() + " "
-                    + weapon.GetWeaponFireAttackForLevel(weapon.level) + " > " + weapon.GetWeaponFireAttackForLevel(nextLevel);
+                    + weapon.GetWeaponFireAttackForLevel(playerManager.attackStatManager, weapon.level) + " > " + weapon.GetWeaponFireAttackForLevel(playerManager.attackStatManager, nextLevel);
             }
-            if (weapon.GetWeaponFrostAttackForLevel(nextLevel) > 0)
+            if (weapon.GetWeaponFrostAttackForLevel(playerManager.attackStatManager, nextLevel) > 0)
             {
                 root.Q<Label>("FrostAttack").style.display = DisplayStyle.Flex;
                 root.Q<Label>("FrostAttack").text = NextFrostBonus_LocalizedString.GetLocalizedString() + " "
-                    + weapon.GetWeaponFrostAttackForLevel(weapon.level) + " > " + weapon.GetWeaponFrostAttackForLevel(nextLevel);
+                    + weapon.GetWeaponFrostAttackForLevel(playerManager.attackStatManager, weapon.level) + " > " + weapon.GetWeaponFrostAttackForLevel(playerManager.attackStatManager, nextLevel);
             }
 
             int playerReputation = playerStatsDatabase.GetCurrentReputation();
-            if (weapon.GetWeaponLightningAttackForLevel(nextLevel, playerReputation) > 0)
+            if (weapon.GetWeaponLightningAttackForLevel(nextLevel, playerReputation, playerManager.attackStatManager) > 0)
             {
                 root.Q<Label>("LightningAttack").style.display = DisplayStyle.Flex;
                 root.Q<Label>("LightningAttack").text = NextLightningBonus_LocalizedString.GetLocalizedString() + " "
-                    + weapon.GetWeaponLightningAttackForLevel(weapon.level, playerReputation) + " > " + weapon.GetWeaponLightningAttackForLevel(nextLevel, playerReputation);
+                    + weapon.GetWeaponLightningAttackForLevel(weapon.level, playerReputation, playerManager.attackStatManager) + " > " + weapon.GetWeaponLightningAttackForLevel(nextLevel, playerReputation, playerManager.attackStatManager);
             }
-            if (weapon.GetWeaponMagicAttackForLevel(nextLevel) > 0)
+            if (weapon.GetWeaponMagicAttackForLevel(nextLevel, playerManager.attackStatManager) > 0)
             {
                 root.Q<Label>("MagicAttack").style.display = DisplayStyle.Flex;
                 root.Q<Label>("MagicAttack").text = NextMagicBonus_LocalizedString.GetLocalizedString() + " "
-                    + weapon.GetWeaponMagicAttackForLevel(weapon.level) + " > " + weapon.GetWeaponMagicAttackForLevel(nextLevel);
+                    + weapon.GetWeaponMagicAttackForLevel(weapon.level, playerManager.attackStatManager) + " > " + weapon.GetWeaponMagicAttackForLevel(nextLevel, playerManager.attackStatManager);
             }
-            if (weapon.GetWeaponDarknessAttackForLevel(nextLevel, playerReputation) > 0)
+            if (weapon.GetWeaponDarknessAttackForLevel(nextLevel, playerReputation, playerManager.attackStatManager) > 0)
             {
                 root.Q<Label>("DarknessAttack").style.display = DisplayStyle.Flex;
                 root.Q<Label>("DarknessAttack").text = NextDarknessBonus_LocalizedString.GetLocalizedString() + " "
-                    + weapon.GetWeaponDarknessAttackForLevel(weapon.level, playerReputation) + " > " + weapon.GetWeaponDarknessAttackForLevel(nextLevel, playerReputation);
+                    + weapon.GetWeaponDarknessAttackForLevel(weapon.level, playerReputation, playerManager.attackStatManager) + " > " + weapon.GetWeaponDarknessAttackForLevel(nextLevel, playerReputation, playerManager.attackStatManager);
             }
 
             // Requirements

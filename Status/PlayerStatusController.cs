@@ -1,3 +1,4 @@
+using System.Linq;
 using AF.Stats;
 using UnityEngine;
 
@@ -48,6 +49,18 @@ namespace AF.StatusEffects
             }
 
             return amount;
+        }
+
+        public int GetResistanceForStatusEffect(StatusEffect statusEffect)
+        {
+            if (statusEffectResistances.ContainsKey(statusEffect))
+            {
+                int bonusMatch = (int)(statusEffectResistanceBonuses.ContainsKey(statusEffect) ? statusEffectResistanceBonuses[statusEffect] : 0);
+
+                return (int)statusEffectResistances[statusEffect] + bonusMatch;
+            }
+
+            return 0;
         }
     }
 }

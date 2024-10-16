@@ -8,6 +8,7 @@ namespace AF
     {
         [Header("UI Components")]
         public UIDocumentPlayerHUDV2 uIDocumentPlayerHUDV2;
+        public UIDocumentCharacterCustomization uIDocumentCharacterCustomization;
 
         [Header("Game Session")]
         public GameSession gameSession;
@@ -19,6 +20,7 @@ namespace AF
 
         [Header("Components")]
         public PlayerManager playerManager;
+        public MenuManager menuManager;
 
         bool canSwitch = true;
 
@@ -144,6 +146,16 @@ namespace AF
         bool CanSwitchEquipment()
         {
             if (!uIDocumentPlayerHUDV2.IsEquipmentDisplayed())
+            {
+                return false;
+            }
+
+            if (menuManager.isMenuOpen)
+            {
+                return false;
+            }
+
+            if (uIDocumentCharacterCustomization.isActiveAndEnabled)
             {
                 return false;
             }

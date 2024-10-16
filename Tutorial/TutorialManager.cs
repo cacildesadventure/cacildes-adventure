@@ -1,7 +1,11 @@
+
+using System;
+using UnityEngine;
+using UnityEngine.Scripting;
+
 namespace AF.Tutorial
 {
-    using System;
-    using UnityEngine;
+    [Preserve] // PreserveAttribute prevents byte code stripping from removing a class, method, field, or property. This class has unity event references only, so unity is ignoring it when producing the build :O
 
     public class TutorialManager : MonoBehaviour
     {

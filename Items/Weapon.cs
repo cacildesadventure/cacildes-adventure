@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AF.Animations;
 using AF.Health;
@@ -73,8 +74,6 @@ namespace AF
 
         [Header("Attack")]
         public Damage damage;
-        public int heavyAttackBonus;
-        public int heavyAttackPostureDamageBonus;
 
         [Header("Level & Upgrades")]
         public bool canBeUpgraded = true;
@@ -111,7 +110,14 @@ namespace AF
         public List<AnimationOverride> animationOverrides;
         [Tooltip("Optional")] public List<AnimationOverride> twoHandOverrides;
         [Tooltip("Optional")] public List<AnimationOverride> blockOverrides;
+
+        public int lightAttackCombos = 2;
+        public int heavyAttackCombos = 1;
+
+        [Header("Upper Layer Options")]
         public bool useUpperLayerAnimations = false;
+        public bool allowUpperLayerWhenOneHanding = true;
+        public bool allowUpperLayerWhenTwoHanding = true;
 
         [Header("Dual Wielding Options")]
         public bool halveDamage = false;
@@ -138,6 +144,7 @@ namespace AF
 
         [Header("Range Category")]
         public bool isCrossbow = false;
+        public bool isHuntingRifle = false;
 
         [Header("Block Options")]
         [Range(0, 1f)] public float blockAbsorption = .8f;
@@ -176,95 +183,133 @@ namespace AF
             return this.damage;
         }
 
-        public int GetWeaponAttack()
+        public int GetWeaponBaseAttack()
         {
             return CalculateValue(this.level).physical;
         }
-        public int GetWeaponAttackForLevel(int level)
+        public int GetWeaponAttack(AttackStatManager attackStatManager)
         {
-            return CalculateValue(level).physical;
+            int strengthBonus = (int)attackStatManager.GetStrengthBonusFromWeapon(this);
+            int dexterityBonus = (int)attackStatManager.GetDexterityBonusFromWeapon(this);
+
+            return GetWeaponBaseAttack() + strengthBonus + dexterityBonus;
         }
-        public int GetWeaponFireAttack()
+        public int GetWeaponAttackForLevel(AttackStatManager attackStatManager, int level)
+        {
+            int strengthBonus = (int)attackStatManager.GetStrengthBonusFromWeapon(this);
+            int dexterityBonus = (int)attackStatManager.GetDexterityBonusFromWeapon(this);
+
+            return CalculateValue(level).physical + strengthBonus + dexterityBonus;
+        }
+        public int GetWeaponFireAttack(AttackStatManager attackStatManager)
         {
             return CalculateValue(this.level).fire;
         }
-        public int GetWeaponFireAttackForLevel(int level)
+        public int GetWeaponFireAttackForLevel(AttackStatManager attackStatManager, int level)
         {
-            return CalculateValue(level).fire;
+            return (int)CalculateValue(level).fire;
         }
-        public int GetWeaponFrostAttack()
+        public int GetWeaponFrostAttack(AttackStatManager attackStatManager)
         {
-            return CalculateValue(this.level).frost;
+            return (int)CalculateValue(this.level).frost;
         }
-        public int GetWeaponFrostAttackForLevel(int level)
+        public int GetWeaponFrostAttackForLevel(AttackStatManager attackStatManager, int level)
         {
-            return CalculateValue(level).frost;
+            return (int)CalculateValue(level).frost;
         }
-        public int GetWeaponLightningAttack(int playerReputation)
+        public int GetWeaponLightningAttack(int playerReputation, AttackStatManager attackStatManager)
         {
             int lightingDamage = CalculateValue(this.level).lightning;
 
             if (isHolyWeapon && playerReputation > 0)
             {
-                lightingDamage += (int)Mathf.Pow(Mathf.Abs(playerReputation), 1.25f);
+                lightingDamage += (int)Math.Min(100, Mathf.Pow(Mathf.Abs(playerReputation), 1.25f));
             }
 
-            return lightingDamage;
+            return (int)lightingDamage; ;
         }
-        public int GetWeaponLightningAttackForLevel(int level, int playerReputation)
+
+        public int GetBaseWeaponLightningAttack()
+        {
+            return CalculateValue(this.level).lightning;
+        }
+
+        public int GetWeaponLightningAttackForLevel(int level, int playerReputation, AttackStatManager attackStatManager)
         {
             int lightingDamage = CalculateValue(level).lightning;
 
             if (isHolyWeapon && playerReputation > 0)
             {
-                lightingDamage += (int)Mathf.Pow(Mathf.Abs(playerReputation), 1.25f);
+                lightingDamage += (int)Math.Min(100, Mathf.Pow(Mathf.Abs(playerReputation), 1.25f));
             }
 
-            return lightingDamage;
+            return (int)lightingDamage;
         }
 
-        public int GetWeaponDarknessAttack(int playerReputation)
+        public int GetBaseWeaponDarknessAttack()
+        {
+            return CalculateValue(this.level).darkness;
+        }
+        public int GetWeaponDarknessAttack(int playerReputation, AttackStatManager attackStatManager)
         {
             int darknessDamage = CalculateValue(this.level).darkness;
 
             if (isHexWeapon && playerReputation < 0)
             {
-                darknessDamage += (int)Mathf.Pow(Mathf.Abs(playerReputation), 1.25f);
+                darknessDamage += (int)Math.Min(100, Mathf.Pow(Mathf.Abs(playerReputation), 1.25f));
             }
 
-            return darknessDamage;
+            return (int)darknessDamage;
         }
 
-        public int GetWeaponDarknessAttackForLevel(int level, int playerReputation)
+        public int GetWeaponDarknessAttackForLevel(int level, int playerReputation, AttackStatManager attackStatManager)
         {
             int darknessDamage = CalculateValue(level).darkness;
 
             if (isHexWeapon && playerReputation < 0)
             {
-                darknessDamage += (int)Mathf.Pow(Mathf.Abs(playerReputation), 1.25f);
+                darknessDamage += (int)Math.Min(100, Mathf.Pow(Mathf.Abs(playerReputation), 1.25f));
             }
 
-            return darknessDamage;
+            return (int)darknessDamage;
         }
 
-        public int GetWeaponWaterAttack()
+        public int GetWeaponWaterAttack(AttackStatManager attackStatManager)
         {
-            return CalculateValue(this.level).water;
+            return (int)CalculateValue(this.level).water;
         }
 
-        public int GetWeaponWaterAttackForLevel(int level)
+        public int GetWeaponWaterAttackForLevel(int level, AttackStatManager attackStatManager)
         {
-            return CalculateValue(level).water;
+            return (int)CalculateValue(level).water;
         }
 
-        public int GetWeaponMagicAttack()
+        public int GetWeaponBaseMagicAttack()
         {
-            return CalculateValue(this.level).magic;
+            return (int)CalculateValue(this.level).magic;
+        }
+        public int GetWeaponMagicAttack(AttackStatManager attackStatManager)
+        {
+            int baseMagicDamage = (int)CalculateValue(this.level).magic;
+
+            if (baseMagicDamage > 0)
+            {
+                baseMagicDamage += (int)attackStatManager.GetIntelligenceBonusFromWeapon(this);
+            }
+
+            return baseMagicDamage;
         }
 
-        public int GetWeaponMagicAttackForLevel(int level)
+        public int GetWeaponMagicAttackForLevel(int level, AttackStatManager attackStatManager)
         {
-            return CalculateValue(level).magic;
+            int baseMagicDamage = (int)CalculateValue(level).magic;
+
+            if (baseMagicDamage > 0)
+            {
+                baseMagicDamage += (int)attackStatManager.GetIntelligenceBonusFromWeapon(this);
+            }
+
+            return baseMagicDamage;
         }
 
         public Damage GetWeaponDamage()
@@ -381,6 +426,25 @@ namespace AF
             }
 
             return text.TrimEnd();
+        }
+
+        public bool CanUseUpperLayer(EquipmentDatabase equipmentDatabase)
+        {
+            if (!useUpperLayerAnimations)
+            {
+                return false;
+            }
+
+            if (!allowUpperLayerWhenOneHanding && !equipmentDatabase.isTwoHanding)
+            {
+                return false;
+            }
+            if (!allowUpperLayerWhenTwoHanding && equipmentDatabase.isTwoHanding)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 

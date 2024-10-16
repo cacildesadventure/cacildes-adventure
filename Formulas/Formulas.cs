@@ -6,6 +6,14 @@ namespace AF
 
     public static class Formulas
     {
+        [Header("Scaling Multipliers")]
+        public static float E = 0;
+        public static float D = .45f;
+        public static float C = .85f;
+        public static float B = 1.55f;
+        public static float A = 2.45f;
+        public static float S = 3.25f;
+        public static float levelMultiplier = 1.25f;
 
         public static int CalculateStatForLevel(int baseValue, int level, float multiplier)
         {
@@ -76,6 +84,30 @@ namespace AF
 
             return damageToReceive;
         }
+
+
+        public static int GetBonusFromWeapon(int currentStatLevel, float scalingMultiplier)
+        {
+            if (scalingMultiplier <= 0)
+            {
+                return 0;
+            }
+
+            // Each x levels, increase the multiplying scale to keep the function growth adjusted to later levels
+            int levelInterval = 5 + (currentStatLevel / 5);
+
+            return (int)LogarithmicFunctionValue(currentStatLevel, levelInterval * scalingMultiplier / 1.5f);
+        }
+
+        public static float LogarithmicFunctionValue(float x, float scaleFactor = 10f)
+        {
+            float horizontalOffset = .5f; // Offset the function so it starts giving higher values after the initial levels
+
+            // Use Math.Log to calculate natural log in C#
+            float result = scaleFactor * Mathf.Log(x - horizontalOffset);
+            return Mathf.Max(1, result <= 0 ? 1 : result);
+        }
+
     }
 
 }

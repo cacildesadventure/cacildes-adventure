@@ -1,3 +1,4 @@
+using DG.Tweening;
 using GameAnalyticsSDK;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -36,6 +37,19 @@ namespace AF
 
             GameAnalytics.NewDesignEvent(eventName);
         }
+        private void PopIn(Button button)
+        {
+            // Animate scale to 1.2x size (pop-in)
+            button.experimental.animation.Scale(1.2f, 400)
+                .OnCompleted(() => PopOut(button));  // After pop-in, call PopOut()
+        }
+
+        private void PopOut(Button button)
+        {
+            // Animate scale back to original size (pop-out)
+            button.experimental.animation.Scale(1f, 400)
+                .OnCompleted(() => PopIn(button));  // After pop-out, call PopIn() again for looping
+        }
 
         private void OnEnable()
         {
@@ -54,10 +68,14 @@ namespace AF
             Button changelogButton = root.Q<Button>("ChangelogButton");
             Button exitButton = root.Q<Button>("ExitButton");
             Button btnGithub = root.Q<Button>("btnGithub");
-            Button btnDiscord = root.Q<Button>("btnDiscord");
+            Button joinDiscordButton = root.Q<Button>("JoinDiscord");
+            Button gameGuideButton = root.Q<Button>("GuidesButton");
+            //            Button btnDiscord = root.Q<Button>("btnDiscord");
             Button btnWebsite = root.Q<Button>("btnWebsite");
             Button btnYoutube = root.Q<Button>("btnYoutube");
             Button btnTwitter = root.Q<Button>("btnTwitter");
+            btnTwitter.style.display = DisplayStyle.None;
+
             Button btnInstagram = root.Q<Button>("btnInstagram");
 
             UIUtils.SetupButton(newGameButton, () =>
@@ -83,6 +101,19 @@ namespace AF
                 uIDocumentTitleScreenSaveFiles.gameObject.SetActive(true);
                 gameObject.SetActive(false);
             }, soundbank);
+
+
+            UIUtils.SetupButton(joinDiscordButton, () =>
+            {
+                LogAnalytic(AnalyticsUtils.OnUIButtonClick("Discord"));
+                Application.OpenURL("https://discord.gg/JwnZMc27D2");
+
+                joinDiscordButton.Focus();
+            }, soundbank);
+
+            joinDiscordButton.style.scale = new Scale(Vector3.one); // Set initial scale
+            joinDiscordButton.RegisterCallback<GeometryChangedEvent>(evt => PopIn(joinDiscordButton));
+
 
             UIUtils.SetupButton(playTutorialButton, () =>
             {
@@ -111,6 +142,14 @@ namespace AF
                 gameObject.SetActive(false);
             }, soundbank);
 
+            UIUtils.SetupButton(gameGuideButton, () =>
+            {
+                LogAnalytic(AnalyticsUtils.OnUIButtonClick("Game Guides"));
+                Application.OpenURL("https://steamcommunity.com/app/2617740/guides/");
+
+                gameGuideButton.Focus();
+            }, soundbank);
+
             UIUtils.SetupButton(exitButton, () =>
             {
                 Application.Quit();
@@ -123,18 +162,20 @@ namespace AF
                 Application.OpenURL("https://github.com/cacildesadventure/cacildes-adventure");
             }, soundbank);
 
-            UIUtils.SetupButton(btnDiscord, () =>
-            {
-                LogAnalytic(AnalyticsUtils.OnUIButtonClick("Discord"));
-                Application.OpenURL("https://discord.gg/JwnZMc27D2");
-            }, soundbank);
+            /*
+                        UIUtils.SetupButton(btnDiscord, () =>
+                        {
+                            LogAnalytic(AnalyticsUtils.OnUIButtonClick("Discord"));
+                            Application.OpenURL("https://discord.gg/JwnZMc27D2");
+                        }, soundbank);*/
 
-            UIUtils.SetupButton(btnTwitter, () =>
-            {
-                LogAnalytic(AnalyticsUtils.OnUIButtonClick("Twitter"));
 
-                Application.OpenURL("https://twitter.com/CacildesGame");
-            }, soundbank);
+            /*            UIUtils.SetupButton(btnTwitter, () =>
+                        {
+                            LogAnalytic(AnalyticsUtils.OnUIButtonClick("Twitter"));
+
+                            Application.OpenURL("https://twitter.com/CacildesGame");
+                        }, soundbank);*/
 
             UIUtils.SetupButton(btnWebsite, () =>
             {
@@ -154,7 +195,7 @@ namespace AF
             {
                 LogAnalytic(AnalyticsUtils.OnUIButtonClick("Instagram"));
 
-                Application.OpenURL("https://www.instagram.com/cacildesadventure/");
+                Application.OpenURL("https://www.instagram.com/cacildes_adventure/");
             }, soundbank);
 
 

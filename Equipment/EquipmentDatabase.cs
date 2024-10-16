@@ -294,18 +294,6 @@ public class EquipmentDatabase : ScriptableObject
         return weapons[currentWeaponIndex];
     }
 
-    public bool IsUsingUpperLayerAnimations()
-    {
-        Weapon currentWeapon = GetCurrentWeapon();
-
-        if (currentWeapon == null)
-        {
-            return false;
-        }
-
-        return currentWeapon.useUpperLayerAnimations;
-    }
-
     public Shield GetCurrentShield()
     {
         return shields[currentShieldIndex];

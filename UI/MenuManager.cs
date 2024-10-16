@@ -29,6 +29,7 @@ namespace AF
         public UIDocumentCharacterCustomization uIDocumentCharacterCustomization;
 
         public PlayerManager playerManager;
+        public UIDocumentPlayerHUDV2 uIDocumentPlayerHUDV2;
 
         [Header("Events")]
         public UnityEvent onMenuOpen;
@@ -139,6 +140,8 @@ namespace AF
 
             onMenuOpen?.Invoke();
             cursorManager.ShowCursor();
+
+            uIDocumentPlayerHUDV2.HideHUD();
         }
 
         public void CloseMenu()
@@ -154,6 +157,8 @@ namespace AF
             onMenuClose?.Invoke();
 
             cursorManager.HideCursor();
+
+            uIDocumentPlayerHUDV2.ShowHUD();
         }
 
         public void CloseMenuViews()

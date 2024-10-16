@@ -16,14 +16,6 @@ namespace AF
         // 16 * 3.25 * 2.4 = 125
         // This gives good values, similar to Dark Souls
 
-        [Header("Scaling Multipliers")]
-        public float E = 0.25f;
-        public float D = 1f;
-        public float C = 1.3f;
-        public float B = 1.65f;
-        public float A = 1.95f;
-        public float S = 2.25f;
-
         private Dictionary<string, float> scalingDictionary = new();
 
         [Header("Status attack bonus")]
@@ -36,10 +28,10 @@ namespace AF
 
         [Header("Physical Attack")]
         public int basePhysicalAttack = 100;
-        public float levelMultiplier = 2.55f;
 
-        public float jumpAttackMultiplier = 3.25f;
-        float twoHandAttackBonusMultiplier = 1.35f;
+        [HideInInspector] public float jumpAttackMultiplier = 1.2f;
+        [HideInInspector] public float twoHandAttackBonusMultiplier = 1.15f;
+        [HideInInspector] public float heavyAttackBonusMultiplier = 1.3f;
 
         [Header("Buff Bonuses")]
         public ParticleSystem increaseNextAttackDamageFX;
@@ -64,12 +56,12 @@ namespace AF
 
         private void Start()
         {
-            scalingDictionary.Add("E", E);
-            scalingDictionary.Add("D", D);
-            scalingDictionary.Add("C", C);
-            scalingDictionary.Add("B", B);
-            scalingDictionary.Add("A", A);
-            scalingDictionary.Add("S", S);
+            scalingDictionary.Add("E", Formulas.E);
+            scalingDictionary.Add("D", Formulas.D);
+            scalingDictionary.Add("C", Formulas.C);
+            scalingDictionary.Add("B", Formulas.B);
+            scalingDictionary.Add("A", Formulas.A);
+            scalingDictionary.Add("S", Formulas.S);
         }
 
         public void ResetStates() { }
@@ -107,14 +99,14 @@ namespace AF
             {
                 Damage weaponDamage = new(
                     physical: GetWeaponAttack(weapon) + rageBonus,
-                    fire: (int)weapon.GetWeaponFireAttack(),
-                    frost: (int)weapon.GetWeaponFrostAttack(),
-                    magic: (int)weapon.GetWeaponMagicAttack(),
-                    lightning: (int)weapon.GetWeaponLightningAttack(playerManager.playerStatsDatabase.GetCurrentReputation()),
-                    darkness: (int)weapon.GetWeaponDarknessAttack(playerManager.playerStatsDatabase.GetCurrentReputation()),
-                    water: (int)weapon.GetWeaponWaterAttack(),
+                    fire: (int)weapon.GetWeaponFireAttack(playerManager.attackStatManager),
+                    frost: (int)weapon.GetWeaponFrostAttack(playerManager.attackStatManager),
+                    magic: (int)weapon.GetWeaponMagicAttack(playerManager.attackStatManager),
+                    lightning: (int)weapon.GetWeaponLightningAttack(playerManager.playerStatsDatabase.GetCurrentReputation(), playerManager.attackStatManager),
+                    darkness: (int)weapon.GetWeaponDarknessAttack(playerManager.playerStatsDatabase.GetCurrentReputation(), playerManager.attackStatManager),
+                    water: (int)weapon.GetWeaponWaterAttack(playerManager.attackStatManager),
                     postureDamage: (IsHeavyAttacking() || IsJumpAttacking())
-                    ? weapon.damage.postureDamage + weapon.heavyAttackPostureDamageBonus
+                    ? (int)(weapon.damage.postureDamage * 1.1f)
                     : weapon.damage.postureDamage,
                     poiseDamage: weapon.damage.poiseDamage,
                     weaponAttackType: weapon.damage.weaponAttackType,
@@ -171,7 +163,7 @@ namespace AF
         {
             int attackValue = GetCurrentPhysicalAttack();
 
-            if (IsJumpAttacking())
+            if (playerManager.thirdPersonController.Grounded == false || IsJumpAttacking())
             {
                 attackValue = Mathf.FloorToInt(attackValue * jumpAttackMultiplier);
 
@@ -196,10 +188,10 @@ namespace AF
             return (int)Mathf.Round(
                 Mathf.Ceil(
                     value
-                        + (playerStatsDatabase.strength * levelMultiplier)
-                        + (playerStatsDatabase.dexterity * levelMultiplier)
-                        + (playerManager.statsBonusController.strengthBonus * levelMultiplier)
-                        + (playerManager.statsBonusController.dexterityBonus * levelMultiplier)
+                        + (playerStatsDatabase.strength * Formulas.levelMultiplier)
+                        + (playerStatsDatabase.dexterity * Formulas.levelMultiplier)
+                        + (playerManager.statsBonusController.strengthBonus * Formulas.levelMultiplier)
+                        + (playerManager.statsBonusController.dexterityBonus * Formulas.levelMultiplier)
                     ) + physicalAttackBonus + heavyAttackBonus
                 );
         }
@@ -210,8 +202,8 @@ namespace AF
             return (int)Mathf.Round(
                 Mathf.Ceil(
                     basePhysicalAttack
-                        + (strength * levelMultiplier)
-                        + (dexterity * levelMultiplier)
+                        + (strength * Formulas.levelMultiplier)
+                        + (dexterity * Formulas.levelMultiplier)
                     )
                 );
         }
@@ -242,32 +234,24 @@ namespace AF
 
         public int GetWeaponAttack(Weapon weapon)
         {
-            float strengthBonusFromWeapon = GetStrengthBonusFromWeapon(weapon);
-            float dexterityBonus = GetDexterityBonusFromWeapon(weapon);
-            float intelligenceBonus = GetIntelligenceBonusFromWeapon(weapon);
-
             var baseValue = HasBowEquipped() || weapon.damage.physical <= 0 ? 0 : GetCurrentPhysicalAttack();
 
-            var value = (int)(
+            var value = (int)
                 baseValue + weapon.damage.physical <= 0 ? 0 : (
-                +weapon.GetWeaponAttack()
-                + GetStrengthBonusFromWeapon(weapon)
-                + GetDexterityBonusFromWeapon(weapon)
-                + GetIntelligenceBonusFromWeapon(weapon))
+                weapon.GetWeaponAttack(this)
             );
 
             if (equipmentDatabase.isTwoHanding)
             {
-                value = (int)(value * twoHandAttackBonusMultiplier) + (int)strengthBonusFromWeapon;
+                value = (int)(value * twoHandAttackBonusMultiplier);
             }
 
             if (playerManager.playerCombatController.isHeavyAttacking)
             {
-                int heavyAttackBonus = weapon.heavyAttackBonus;
-                value += heavyAttackBonus;
+                value = (int)(value * heavyAttackBonusMultiplier);
             }
 
-            if (IsJumpAttacking())
+            if (playerManager.thirdPersonController.Grounded == false || IsJumpAttacking())
             {
                 value = Mathf.FloorToInt(value * jumpAttackMultiplier);
 
@@ -314,17 +298,40 @@ namespace AF
                 value = (int)(value * playerManager.characterBlockController.counterAttackMultiplier);
             }
 
+            float attackMultiplierBonuses = 1;
+
             // Bonus for two handing attack accessories
             if (equipmentDatabase.isTwoHanding)
             {
-                var attackMultiplierBonuses = equipmentDatabase.accessories.Sum(x => x != null ? x.twoHandAttackBonusMultiplier : 0);
+                attackMultiplierBonuses += playerManager.statsBonusController.twoHandAttackBonusMultiplier;
+            }
 
-                if (attackMultiplierBonuses > 0)
+            Weapon currentWeapon = equipmentDatabase.GetCurrentWeapon();
+
+            if (currentWeapon == null)
+            {
+                if (playerManager.statsBonusController.increaseAttackPowerWhenUnarmed)
                 {
-                    value = (int)(value * attackMultiplierBonuses);
+                    attackMultiplierBonuses *= 1.65f;
+                }
+            }
+            else
+            {
+                if (currentWeapon.damage.weaponAttackType == WeaponAttackType.Pierce)
+                {
+                    attackMultiplierBonuses += playerManager.statsBonusController.pierceDamageMultiplier;
+                }
+                else if (currentWeapon.damage.weaponAttackType == WeaponAttackType.Slash)
+                {
+                    attackMultiplierBonuses += playerManager.statsBonusController.slashDamageMultiplier;
+                }
+                else if (currentWeapon.damage.weaponAttackType == WeaponAttackType.Blunt)
+                {
+                    attackMultiplierBonuses += playerManager.statsBonusController.bluntDamageMultiplier;
                 }
             }
 
+            value = (int)(value * attackMultiplierBonuses);
 
             return value;
         }
@@ -337,8 +344,10 @@ namespace AF
                 return 0;
             }
 
-            return (int)Mathf.Ceil((playerStatsDatabase.strength + playerManager.statsBonusController.strengthBonus)
-            * levelMultiplier * scalingDictionary[weapon.strengthScaling.ToString()] / 1.5f);
+            return Formulas.GetBonusFromWeapon(
+                playerManager.statsBonusController.GetCurrentStrength(),
+                 scalingDictionary[weapon.strengthScaling.ToString()]
+            );
         }
 
         public float GetDexterityBonusFromWeapon(Weapon weapon)
@@ -348,14 +357,18 @@ namespace AF
                 return 0;
             }
 
-            return (int)Mathf.Ceil((playerStatsDatabase.dexterity + playerManager.statsBonusController.dexterityBonus)
-                * levelMultiplier * scalingDictionary[weapon.dexterityScaling.ToString()] / 1.5f);
+            return Formulas.GetBonusFromWeapon(
+                playerManager.statsBonusController.GetCurrentDexterity(),
+                 scalingDictionary[weapon.dexterityScaling.ToString()]
+            );
         }
 
         public float GetIntelligenceBonusFromWeapon(Weapon weapon)
         {
-            return (int)Mathf.Ceil((playerStatsDatabase.intelligence + playerManager.statsBonusController.intelligenceBonus)
-                * levelMultiplier * scalingDictionary[weapon.intelligenceScaling.ToString()] / 1.5f);
+            return Formulas.GetBonusFromWeapon(
+                playerManager.statsBonusController.GetCurrentIntelligence(),
+                 scalingDictionary[weapon.intelligenceScaling.ToString()]
+            );
         }
 
 

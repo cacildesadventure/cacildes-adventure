@@ -14,10 +14,14 @@ namespace AF
         public int physicalAttackBonus = 0;
         public int jumpAttackBonus = 0;
         public float twoHandAttackBonusMultiplier = 0f;
+        public float slashDamageMultiplier = 0f;
+        public float pierceDamageMultiplier = 0f;
+        public float bluntDamageMultiplier = 0f;
 
         [Header("Stats")]
         public bool increaseAttackPowerTheLowerTheReputation = false;
         public bool increaseAttackPowerWithLowerHealth = false;
+        public bool increaseAttackPowerWhenUnarmed = false;
 
         [Header("Posture")]
         public int postureDamagePerParry = 0;

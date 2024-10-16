@@ -15,6 +15,9 @@ namespace AF.Health
         public UnityEvent onDeath;
         public UnityEvent onDamageFromPlayer;
 
+        [HideInInspector]
+        public UnityEvent onHealthChange;
+
         [Header("Quests")]
         public Weapon weaponRequiredToKill;
         public bool hasBeenHitWithRequiredWeapon = false;
@@ -36,6 +39,8 @@ namespace AF.Health
         private void Start()
         {
             onStart?.Invoke();
+
+            onHealthChange?.Invoke();
         }
 
         public abstract void RestoreHealth(float value);
@@ -104,7 +109,6 @@ namespace AF.Health
         public virtual void SetHasHealthCutInHealth(bool value)
         {
             hasHealthCutInHalf = value;
-
         }
     }
 

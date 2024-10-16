@@ -16,6 +16,7 @@ namespace AF
     {
 
         public Item resultingItem;
+        public int resultingAmount = 1;
 
         public List<CraftingIngredientEntry> ingredients = new();
 

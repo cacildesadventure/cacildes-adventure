@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AF.Companions;
 using AF.Inventory;
 using AYellowpaper.SerializedCollections;
 using UnityEditor;
@@ -43,7 +44,7 @@ namespace AF
     {
         [Header("Inventory")]
         public SerializedDictionary<Item, ItemAmount> ownedItems = new();
-
+        public bool loadAllItems = false;
 
         [Header("Equipped Items")]
         public Weapon[] weapons = new Weapon[3]; // Fixed size array for weapons
@@ -84,12 +85,17 @@ namespace AF
 
         public InventoryDatabase inventoryDatabase;
 
+        [Header("Companions")]
+        public CompanionID[] companions;
+        public CompanionsDatabase companionsDatabase;
+
         public void LoadPlayerPreset()
         {
             LoadStats();
             LoadInventory();
             LoadEquipment();
             LoadQuests();
+            LoadCompanions();
         }
 
         void LoadStats()
@@ -105,6 +111,16 @@ namespace AF
 
         void LoadInventory()
         {
+            if (loadAllItems)
+            {
+                Item[] items = Resources.LoadAll<Item>("Items");
+                foreach (var item in items)
+                {
+                    inventoryDatabase.AddItem(item);
+                }
+                return;
+            }
+
             foreach (var ownedItem in ownedItems)
             {
                 inventoryDatabase.AddItem(ownedItem.Key, ownedItem.Value.amount);
@@ -175,6 +191,17 @@ namespace AF
             {
                 currentQuest.SetProgress(currentQuestProgress);
                 currentQuest.Track();
+            }
+        }
+
+        void LoadCompanions()
+        {
+            if (companionsDatabase != null && companions.Length > 0)
+            {
+                foreach (var c in companions)
+                {
+                    companionsDatabase.AddToParty(c.GetCompanionID());
+                }
             }
         }
     }

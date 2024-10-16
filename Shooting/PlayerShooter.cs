@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AF.Inventory;
@@ -6,7 +5,6 @@ using Cinemachine;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Events;
-using UnityEngine.Localization.Settings;
 
 namespace AF.Shooting
 {
@@ -43,6 +41,7 @@ namespace AF.Shooting
 
         [Header("Refs")]
         public Transform playerFeetRef;
+        public Transform playerShootingHandRef;
 
 
         [Header("Flags")]
@@ -66,12 +65,21 @@ namespace AF.Shooting
         public GameObject queuedProjectile;
         public Spell queuedSpell;
 
+        public bool canShootBow = true;
+
         public void ResetStates()
         {
             isShooting = false;
 
             queuedProjectile = null;
             queuedSpell = null;
+
+            Invoke(nameof(ResetCanShootBow), 0.1f);
+        }
+
+        void ResetCanShootBow()
+        {
+            canShootBow = true;
         }
 
         void SetupCinemachine3rdPersonFollowReference()
@@ -86,26 +94,33 @@ namespace AF.Shooting
 
         bool IsRangeWeaponIncompatibleWithProjectile()
         {
-            if (equipmentDatabase.GetCurrentWeapon().isCrossbow)
-            {
-                if (equipmentDatabase.GetCurrentArrow().isBolt == false)
-                {
+            Weapon currentRangeWeapon = equipmentDatabase.GetCurrentWeapon();
+            Arrow arrow = equipmentDatabase.GetCurrentArrow();
 
-                    notificationManager.ShowNotification(LocalizationSettings.StringDatabase.GetLocalizedString("UIDocuments", "Arrows can only be fired with a bow"));
-                    return true;
-                }
+            if (currentRangeWeapon == null || arrow == null)
+            {
+                return true;
             }
 
-            if (equipmentDatabase.GetCurrentWeapon().isCrossbow == false)
+            if (currentRangeWeapon.isHuntingRifle && arrow.isRifleBullet)
             {
-                if (equipmentDatabase.GetCurrentArrow().isBolt)
-                {
-                    notificationManager.ShowNotification(LocalizationSettings.StringDatabase.GetLocalizedString("UIDocuments", "Bolts can only be fired with a crossbow"));
-                    return true;
-                }
+                return false;
             }
 
-            return false;
+            if (currentRangeWeapon.isCrossbow && arrow.isBolt)
+            {
+                return false;
+            }
+
+            bool isBow = currentRangeWeapon.isCrossbow == false && currentRangeWeapon.isHuntingRifle == false;
+            bool isArrow = arrow.isRifleBullet == false && arrow.isBolt == false;
+
+            if (isBow && isArrow)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -124,6 +139,7 @@ namespace AF.Shooting
 
                     ShootBow(equipmentDatabase.GetCurrentArrow(), transform, lockOnManager.nearestLockOnTarget?.transform);
                     uIDocumentPlayerHUDV2.UpdateEquipment();
+                    canShootBow = false;
                     return;
                 }
 
@@ -230,7 +246,10 @@ namespace AF.Shooting
                 achievementOnShootingBowForFirstTime.AwardAchievement();
             }
 
-            inventoryDatabase.RemoveItem(consumableProjectile, 1);
+            if (equipmentDatabase.GetCurrentArrow().loseUponFiring)
+            {
+                inventoryDatabase.RemoveItem(consumableProjectile, 1);
+            }
 
             GetPlayerManager().staminaStatManager.DecreaseStamina(minimumStaminaToShoot);
 
@@ -297,10 +316,10 @@ namespace AF.Shooting
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0f));
             Vector3 lookPosition = ray.direction;
 
-            if (lookPosition.y > 0)
+            /*if (lookPosition.y > 0)
             {
                 lookPosition.y *= -1f;
-            }
+            }*/
 
             cinemachineImpulseSource.GenerateImpulse();
             isShooting = true;
@@ -319,7 +338,6 @@ namespace AF.Shooting
             HandleProjectile(
                 queuedProjectile,
                 distanceFromCamera,
-                Quaternion.LookRotation(lookPosition),
                 ray,
                 0f,
                 queuedSpell,
@@ -336,9 +354,10 @@ namespace AF.Shooting
             queuedSpell = null;
         }
 
-        void HandleProjectile(GameObject projectile, float originDistanceFromCamera, Quaternion lookPosition, Ray ray, float delay, Spell spell, bool ignoreSpawnFromCamera)
+        void HandleProjectile(GameObject projectile, float originDistanceFromCamera, Ray ray, float delay, Spell spell, bool ignoreSpawnFromCamera)
         {
             Vector3 origin = ray.GetPoint(originDistanceFromCamera);
+            Quaternion lookPosition = Quaternion.identity;
 
             // If shooting spell but not locked on, use player transform forward to direct the spell
             if (lockOnManager.isLockedOn == false && isAiming == false || spell != null && spell.ignoreSpawnFromCamera || ignoreSpawnFromCamera)
@@ -382,7 +401,6 @@ namespace AF.Shooting
             }
 
             GameObject projectileInstance = Instantiate(projectile, origin, lookPosition);
-
 
             if (spell != null && spell.parentToPlayer)
             {
@@ -547,6 +565,11 @@ namespace AF.Shooting
             }
 
             if (GetPlayerManager().thirdPersonController.isSwimming)
+            {
+                return false;
+            }
+
+            if (!canShootBow)
             {
                 return false;
             }

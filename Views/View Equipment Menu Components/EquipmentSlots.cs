@@ -18,6 +18,7 @@ namespace AF.UI.EquipmentMenu
 
         public ItemList itemList;
         public ItemTooltip itemTooltip;
+        public PlayerStatsAndAttributesUI playerStatsAndAttributesUI;
 
         Button weaponButtonSlot1;
         Button weaponButtonSlot2;
@@ -719,6 +720,8 @@ namespace AF.UI.EquipmentMenu
             soundbank.PlaySound(soundbank.uiCancel);
 
             DrawUI();
+
+            playerStatsAndAttributesUI.DrawStats(null);
         }
     }
 }

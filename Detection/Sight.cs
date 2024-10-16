@@ -11,7 +11,6 @@ namespace AF.Detection
 {
     public class Sight : MonoBehaviour
     {
-        public float fieldOfViewAngle = 90f;
         public float viewDistance = 10f;
         public LayerMask targetLayer;
 
@@ -45,6 +44,7 @@ namespace AF.Detection
             if (Physics.Raycast(originPosition, direction, out RaycastHit hit, viewDistance, targetLayer))
             {
                 if (debug) Debug.DrawLine(originPosition, hit.point, Color.red); // Draw a red line for the raycast
+
                 return hit.transform;
             }
 

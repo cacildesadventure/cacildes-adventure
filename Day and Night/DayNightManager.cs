@@ -269,5 +269,11 @@ namespace AF
                 }
             }
         }
+
+        public void SetFogDensity(float value)
+        {
+            this.fogDensity = value;
+            RenderSettings.fogDensity = fogDensity;
+        }
     }
 }

@@ -43,6 +43,11 @@ namespace AF
 
         public UnityAction onBlockChanged;
 
+        public void ResetStates()
+        {
+            isBlocking = false;
+        }
+
         public void SetIsBlocking(bool value)
         {
             isBlocking = value;
@@ -50,13 +55,11 @@ namespace AF
             onBlockChanged?.Invoke();
         }
 
-        public void BlockAttack(Damage damage)
+        public virtual void BlockAttack(Damage damage)
         {
             characterManager.characterPosture.TakePostureDamage((int)(damage.postureDamage * blockMultiplier));
 
             onBlockDamageEvent?.Invoke();
-
-            isBlocking = false;
         }
 
         public bool CanBlockDamage(Damage damage)
@@ -107,7 +110,7 @@ namespace AF
 
         public bool CanParry(Damage damage)
         {
-            if (damage.canNotBeParried)
+            if (damage != null && damage.canNotBeParried)
             {
                 return false;
             }

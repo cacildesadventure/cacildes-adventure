@@ -218,6 +218,12 @@ namespace AF.UI.EquipmentMenu
         public LocalizedString multiplierWhenTwoHanding;
         public LocalizedString lostUponUse;
 
+        public LocalizedString strengthDamageLabel;
+        public LocalizedString dexterityDamageLabel;
+        public LocalizedString intelligenceDamageLabel;
+        public LocalizedString twoHandDamageLabel;
+        public LocalizedString jumpingDamageLabel;
+
 
         private void OnEnable()
         {
@@ -417,79 +423,59 @@ namespace AF.UI.EquipmentMenu
                     weapon.DrawRequirements(playerManager.statsBonusController));
             }
 
-            var strengthAttackBonus = attackStatManager.GetStrengthBonusFromWeapon(weapon);
-            var dexterityAttackBonus = attackStatManager.GetDexterityBonusFromWeapon(weapon);
-            var intelligenceAttackBonus = attackStatManager.GetIntelligenceBonusFromWeapon(weapon);
-
-            string damageExplanation = String.Format(
-                damageExplanationLabel.GetLocalizedString(),
-                attackStatManager.GetWeaponAttack(weapon),
-                weapon.damage.physical,
-                strengthAttackBonus,
-                weapon.strengthScaling,
-                dexterityAttackBonus,
-                weapon.dexterityScaling,
-                intelligenceAttackBonus,
-                weapon.intelligenceScaling
-            );
-
-            CreateTooltip(weaponPhysicalAttackSprite, Color.white, damageExplanation);
-
-            CreateEquipLoadTooltip(weapon.speedPenalty);
-
-            if (weapon.isHolyWeapon)
+            if (attackStatManager.GetWeaponAttack(weapon) > 0)
             {
-                CreateTooltip(holyWeaponSprite, Color.white, holyWeaponLabel.GetLocalizedString());
+                CreateTooltip(weaponPhysicalAttackSprite, Color.white, TooltipUtils.GetWeaponPhysicalDamageExplanation(playerManager, weapon));
             }
-            if (weapon.GetWeaponFireAttack() > 0)
+
+            if (weapon.GetWeaponFireAttack(attackStatManager) > 0)
             {
                 CreateTooltip(
                     fireSprite,
                     fire,
                     String.Format(
                         fireAttackLabel.GetLocalizedString(),
-                        weapon.GetWeaponFireAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(weapon)));
+                        weapon.GetWeaponFireAttack(attackStatManager)));
             }
 
-            if (weapon.GetWeaponFrostAttack() > 0)
+            if (weapon.GetWeaponFrostAttack(attackStatManager) > 0)
             {
                 CreateTooltip(
                     frostSprite,
                     frost,
                     String.Format(
                         frostAttackLabel.GetLocalizedString(),
-                        weapon.GetWeaponFrostAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(weapon)));
+                        weapon.GetWeaponFrostAttack(attackStatManager) + attackStatManager.GetIntelligenceBonusFromWeapon(weapon)));
             }
 
-            if (weapon.GetWeaponLightningAttack(playerManager.playerStatsDatabase.GetCurrentReputation()) > 0)
+            if (weapon.GetWeaponLightningAttack(playerManager.playerStatsDatabase.GetCurrentReputation(), attackStatManager) > 0)
             {
+                int baseLightningAttack = weapon.GetBaseWeaponLightningAttack();
+                int holyDamageScaleFromReputation = weapon.GetWeaponLightningAttack(playerManager.playerStatsDatabase.GetCurrentReputation(), attackStatManager) - baseLightningAttack;
+
                 CreateTooltip(
                 lightningSprite,
                 lightning,
-                String.Format(
-                    lightningAttackLabel.GetLocalizedString(),
-                    weapon.GetWeaponLightningAttack(playerManager.playerStatsDatabase.GetCurrentReputation())
-                        + attackStatManager.GetIntelligenceBonusFromWeapon(weapon)));
+                TooltipUtils.GetLightiningDamageExplanation(baseLightningAttack, holyDamageScaleFromReputation, 0));
             }
 
-            if (weapon.GetWeaponMagicAttack() > 0)
+            if (weapon.GetWeaponMagicAttack(attackStatManager) > 0)
             {
                 CreateTooltip(
                 magicSprite,
                 magic,
-                String.Format(
-                    magicAttackLabel.GetLocalizedString(),
-                    weapon.GetWeaponMagicAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(weapon)));
+                TooltipUtils.GetMagicDamageExplanation(playerManager, weapon));
             }
 
-            if (weapon.GetWeaponDarknessAttack(attackStatManager.playerStatsDatabase.GetCurrentReputation()) > 0)
+            if (weapon.GetWeaponDarknessAttack(attackStatManager.playerStatsDatabase.GetCurrentReputation(), attackStatManager) > 0)
             {
+                int baseDarknessAttack = weapon.GetBaseWeaponDarknessAttack();
+                int holyDamageScaleFromReputation = weapon.GetWeaponDarknessAttack(playerManager.playerStatsDatabase.GetCurrentReputation(), attackStatManager) - baseDarknessAttack;
+
                 CreateTooltip(
                 darknessSprite,
                 darkness,
-                String.Format(
-                    darknessAttackLabel.GetLocalizedString(),
-                    weapon.GetWeaponDarknessAttack(attackStatManager.playerStatsDatabase.GetCurrentReputation()) + attackStatManager.GetIntelligenceBonusFromWeapon(weapon)));
+                TooltipUtils.GetDarknessDamageExplanation(baseDarknessAttack, holyDamageScaleFromReputation, 0));
             }
 
             if (weapon.damage.weaponAttackType == WeaponAttackType.Blunt)
@@ -509,6 +495,13 @@ namespace AF.UI.EquipmentMenu
                 CreateTooltip(statusEffectsSprite, Color.white, weapon.GetFormattedStatusDamages());
             }
 
+            CreateEquipLoadTooltip(weapon.speedPenalty);
+
+            if (weapon.isHolyWeapon)
+            {
+                CreateTooltip(holyWeaponSprite, Color.white, holyWeaponLabel.GetLocalizedString());
+            }
+
             if (weapon.damage.pushForce > 0)
             {
                 CreateTooltip(pushForceSprite, Color.white, String.Format(
@@ -521,12 +514,12 @@ namespace AF.UI.EquipmentMenu
                     postureDamageLabel.GetLocalizedString(), weapon.damage.postureDamage));
             }
 
-            if (weapon.heavyAttackBonus > 0)
-            {
-                CreateTooltip(heavyAttackSprite, Color.white,
-                String.Format(
-                    heavyAttackBonusLabel.GetLocalizedString(), weapon.heavyAttackBonus));
-            }
+            /*            if (weapon.heavyAttackBonus > 0)
+                        {
+                            CreateTooltip(heavyAttackSprite, Color.white,
+                            String.Format(
+                                heavyAttackBonusLabel.GetLocalizedString(), weapon.heavyAttackBonus));
+                        }*/
 
             CreateTooltip(
                 staminaCostSprite,
@@ -1073,11 +1066,6 @@ namespace AF.UI.EquipmentMenu
             if (accessory.GetShortDescription() != null && accessory.GetShortDescription().Length > 0)
             {
                 CreateTooltip(statusEffectsSprite, Color.white, accessory.GetShortDescription());
-            }
-
-            if (accessory.statusEffectCancellationRates != null && accessory.statusEffectCancellationRates.Length > 0)
-            {
-                CreateTooltip(statusEffectsSprite, Color.white, accessory.GetFormattedStatusCancellationRates());
             }
 
             if (accessory.healthBonus > 0)

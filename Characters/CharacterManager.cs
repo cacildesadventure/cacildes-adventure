@@ -99,6 +99,8 @@ namespace AF
             damageReceiver?.ResetStates();
             onResetStates?.Invoke();
 
+            characterBlockController.ResetStates();
+
             characterPoise.ResetStates();
 
             executionManager.ResetStates();

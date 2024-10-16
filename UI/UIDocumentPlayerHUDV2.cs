@@ -7,6 +7,7 @@ using TigerForge;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UIElements;
 
 namespace AF
@@ -106,6 +107,8 @@ namespace AF
             EventManager.StartListening(EventMessages.ON_USE_CUSTOM_INPUT_CHANGED, UpdateInputsHUD);
 
             EventManager.StartListening(EventMessages.ON_PLAYER_HUD_VISIBILITY_CHANGED, EvaluatePlayerHUD);
+
+            EventManager.StartListening(EventMessages.ON_TWO_HANDING_CHANGED, UpdateCombatStanceIndicator);
         }
 
         void EvaluatePlayerHUD()
@@ -169,19 +172,21 @@ namespace AF
             GamepadActions = root.Q<VisualElement>("GamepadActions");
 
             combatStanceIndicatorLabel = root.Q<Label>("CombatStanceIndicator");
-            UpdateCombatStanceIndicator();
-            EventManager.StartListening(EventMessages.ON_TWO_HANDING_CHANGED, UpdateCombatStanceIndicator);
-
-            UpdateEquipment();
-
-            UpdateInputsHUD();
-            InputSystem.onDeviceChange += HandleDeviceChangeCallback;
-
-            UpdateQuestTracking();
 
             root.Q<VisualElement>("SwimmingIndicator").style.display = playerManager.thirdPersonController.water != null ? DisplayStyle.Flex : DisplayStyle.None;
 
+            InputSystem.onDeviceChange += HandleDeviceChangeCallback;
+
+            Load();
+        }
+
+        void Load()
+        {
+            UpdateEquipment();
+            UpdateQuestTracking();
             EvaluatePlayerHUD();
+            UpdateCombatStanceIndicator();
+            UpdateInputsHUD();
         }
 
         void UpdateCombatStanceIndicator()
@@ -274,12 +279,23 @@ namespace AF
             HandleDeviceChange();
         }
 
+        /// <summary>
+        /// Unity Event
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetHUD_RootOpacity(float value)
+        {
+            root.style.opacity = value;
+        }
+
         public void HideHUD()
         {
+            SetHUD_RootOpacity(0);
         }
 
         public void ShowHUD()
         {
+            SetHUD_RootOpacity(1);
         }
 
         public void ShowControlHints()

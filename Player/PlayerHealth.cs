@@ -109,6 +109,8 @@ namespace AF
 
                 HandleDeath();
             }
+
+            onHealthChange?.Invoke();
         }
 
         /// <summary>
@@ -124,6 +126,8 @@ namespace AF
             {
                 HandleDeath();
             }
+
+            onHealthChange?.Invoke();
         }
 
         void HandleDeath()
@@ -135,6 +139,7 @@ namespace AF
                 onDyingInArena?.Invoke();
                 return;
             }
+
             onDeath?.Invoke();
         }
 
@@ -199,10 +204,12 @@ namespace AF
         public override void SetCurrentHealth(float value)
         {
             this.playerStatsDatabase.currentHealth = value;
+            onHealthChange?.Invoke();
         }
 
         public override void SetMaxHealth(int value)
         {
+            onHealthChange?.Invoke();
         }
 
     }

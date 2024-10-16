@@ -1,6 +1,7 @@
 using System;
 using AF.Combat;
 using AF.Health;
+using GameAnalyticsSDK;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
@@ -46,7 +47,7 @@ namespace AF
         public void OnDamage(CharacterBaseManager attacker, Action onDamageInflicted)
         {
             // Don't allow character to hit itself if not confused
-            if (character.isConfused == false && attacker == character)
+            if (character?.isConfused == false && attacker == character)
             {
                 return;
             }
@@ -54,7 +55,7 @@ namespace AF
             HandleIncomingDamage(attacker, (incomingDamage) =>
             {
                 onDamageInflicted();
-            }, character.isConfused);
+            }, character != null ? character.isConfused : false);
         }
 
 
@@ -137,6 +138,15 @@ namespace AF
             }
 
             Damage incomingDamage = damageOwner.GetAttackDamage();
+            if (incomingDamage == null)
+            {
+                if (!GameAnalytics.Initialized)
+                {
+                    GameAnalytics.Initialize();
+                }
+                GameAnalytics.NewErrorEvent(GAErrorSeverity.Error, "Incoming Damage was null. Damage Owner was: " + damageOwner != null ? damageOwner.gameObject.name : " - null damage owner game object - ");
+                return;
+            }
 
             if (character != null)
             {
@@ -165,9 +175,33 @@ namespace AF
                     return;
                 }
 
-                if (character.characterBlockController.CanBlockDamage(incomingDamage) && HandleBlocking(incomingDamage, damageOwner))
+                if (character.characterBlockController.CanBlockDamage(incomingDamage))
                 {
-                    return;
+                    if (character is PlayerManager playerManager)
+                    {
+                        if (playerManager.staminaStatManager.HasEnoughStaminaForAction(playerManager.playerWeaponsManager.GetCurrentBlockStaminaCost()))
+                        {
+                            incomingDamage = playerManager.playerWeaponsManager.GetCurrentShieldDefenseAbsorption(incomingDamage);
+
+                            if (damageOwner != null && damageOwner is CharacterManager enemy)
+                            {
+                                playerManager.playerWeaponsManager.ApplyShieldDamageToAttacker(enemy);
+                            }
+
+                            playerManager.staminaStatManager.DecreaseStamina((int)playerManager.playerWeaponsManager.GetCurrentBlockStaminaCost());
+                            character.characterBlockController.BlockAttack(incomingDamage);
+
+                            if (playerManager.characterBlockController is PlayerBlockController playerBlockController)
+                            {
+                                playerBlockController.SetCanCounterAttack(true);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        character.characterBlockController.BlockAttack(incomingDamage);
+                        return;
+                    }
                 }
 
                 HandlePlayerReactionToEnemyAttack(damageOwner, character);
@@ -182,37 +216,6 @@ namespace AF
             ApplyDamage(incomingDamage);
 
             onTakeDamage?.Invoke(incomingDamage);
-        }
-
-        bool HandleBlocking(Damage incomingDamage, CharacterBaseManager damageOwner)
-        {
-            if (character is PlayerManager playerManager)
-            {
-                if (playerManager.staminaStatManager.HasEnoughStaminaForAction(playerManager.playerWeaponsManager.GetCurrentBlockStaminaCost()))
-                {
-                    incomingDamage = playerManager.playerWeaponsManager.GetCurrentShieldDefenseAbsorption(incomingDamage);
-
-                    if (damageOwner != null && damageOwner is CharacterManager enemy)
-                    {
-                        playerManager.playerWeaponsManager.ApplyShieldDamageToAttacker(enemy);
-                    }
-
-                    playerManager.staminaStatManager.DecreaseStamina((int)playerManager.playerWeaponsManager.GetCurrentBlockStaminaCost());
-                    character.characterBlockController.BlockAttack(incomingDamage);
-
-                    if (playerManager.characterBlockController is PlayerBlockController playerBlockController)
-                    {
-                        playerBlockController.SetCanCounterAttack(true);
-                    }
-                }
-            }
-            else
-            {
-                character.characterBlockController.BlockAttack(incomingDamage);
-                return true;
-            }
-
-            return false;
         }
 
         void HandlePlayerArmorAttacks(CharacterBaseManager damageOwner)

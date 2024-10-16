@@ -10,17 +10,16 @@ namespace AF
 
         public readonly int hashLightAttack1 = Animator.StringToHash("Light Attack 1");
         public readonly string hashLightAttack2 = "Light Attack 2";
+        public readonly string hashLightAttack3 = "Light Attack 3";
+        public readonly string hashLightAttack4 = "Light Attack 4";
         public readonly int hashHeavyAttack1 = Animator.StringToHash("Heavy Attack 1");
-
-        public readonly string hashUpperLightAttack1 = "Upper Light Attack 1";
-        public readonly string hashUpperLightAttack2 = "Upper Light Attack 2";
-        public readonly string hashUpperHeavyAttack1 = "Upper Heavy Attack 1";
+        public readonly string hashHeavyAttack2 = "Heavy Attack 2";
         public readonly int hashSpecialAttack = Animator.StringToHash("Special Attack");
         public readonly int hashJumpAttack = Animator.StringToHash("Jump Attack");
 
         [Header("Attack Combo Index")]
         public float maxIdleCombo = 2f;
-        [SerializeField] int lightAttackComboIndex = 0;
+        [SerializeField] int lightAttackComboIndex, heavyAttackComboIndex = 0;
 
         [Header("Flags")]
         public bool isCombatting = false;
@@ -95,32 +94,26 @@ namespace AF
                     return;
                 }
 
-                if (lightAttackComboIndex > 1)
+                if (lightAttackComboIndex > GetMaxLightCombo())
                 {
                     lightAttackComboIndex = 0;
                 }
 
                 if (lightAttackComboIndex == 0)
                 {
-                    if (equipmentDatabase.IsUsingUpperLayerAnimations())
-                    {
-                        playerManager.animator.CrossFade(hashUpperLightAttack1, 0.2f);
-                    }
-                    else
-                    {
-                        playerManager.PlayBusyHashedAnimationWithRootMotion(hashLightAttack1);
-                    }
+                    playerManager.PlayBusyHashedAnimationWithRootMotion(hashLightAttack1);
                 }
                 else if (lightAttackComboIndex == 1)
                 {
-                    if (equipmentDatabase.IsUsingUpperLayerAnimations())
-                    {
-                        playerManager.animator.CrossFade(hashUpperLightAttack2, 0.2f);
-                    }
-                    else
-                    {
-                        playerManager.PlayCrossFadeBusyAnimationWithRootMotion(hashLightAttack2, 0.2f);
-                    }
+                    playerManager.PlayCrossFadeBusyAnimationWithRootMotion(hashLightAttack2, 0.05f);
+                }
+                else if (lightAttackComboIndex == 2)
+                {
+                    playerManager.PlayCrossFadeBusyAnimationWithRootMotion(hashLightAttack3, 0.05f);
+                }
+                else if (lightAttackComboIndex == 3)
+                {
+                    playerManager.PlayCrossFadeBusyAnimationWithRootMotion(hashLightAttack4, 0.05f);
                 }
 
                 HandleAttackSpeed();
@@ -138,6 +131,20 @@ namespace AF
                 StopCoroutine(ResetLightAttackComboIndexCoroutine);
             }
             ResetLightAttackComboIndexCoroutine = StartCoroutine(_ResetLightAttackComboIndex());
+        }
+
+        int GetMaxLightCombo()
+        {
+            int maxCombo = 1;
+
+            Weapon currentWeapon = equipmentDatabase.GetCurrentWeapon();
+
+            if (currentWeapon != null)
+            {
+                maxCombo = currentWeapon.lightAttackCombos - 1;
+            }
+
+            return maxCombo;
         }
 
         IEnumerator _ResetLightAttackComboIndex()
@@ -189,26 +196,51 @@ namespace AF
 
             playerManager.playerWeaponsManager.HideShield();
 
+
+            if (heavyAttackComboIndex > GetMaxHeavyCombo())
+            {
+                heavyAttackComboIndex = 0;
+            }
+
             if (isCardAttack)
             {
                 playerManager.PlayBusyHashedAnimationWithRootMotion(hashSpecialAttack);
             }
             else
             {
-                if (equipmentDatabase.IsUsingUpperLayerAnimations())
-                {
-                    playerManager.animator.CrossFade(hashUpperHeavyAttack1, 0.2f);
-                }
-                else
+                if (heavyAttackComboIndex == 0)
                 {
                     playerManager.PlayBusyHashedAnimationWithRootMotion(hashHeavyAttack1);
+                }
+                else if (heavyAttackComboIndex == 1)
+                {
+                    playerManager.PlayCrossFadeBusyAnimationWithRootMotion(hashHeavyAttack2, 0.05f);
                 }
             }
 
             playerManager.staminaStatManager.DecreaseHeavyAttackStamina();
 
             HandleAttackSpeed();
+
+            heavyAttackComboIndex++;
         }
+
+
+
+        int GetMaxHeavyCombo()
+        {
+            int maxCombo = 0;
+
+            Weapon currentWeapon = equipmentDatabase.GetCurrentWeapon();
+
+            if (currentWeapon != null)
+            {
+                maxCombo = currentWeapon.heavyAttackCombos - 1;
+            }
+
+            return maxCombo;
+        }
+
 
         public bool CanLightAttack()
         {

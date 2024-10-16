@@ -46,6 +46,15 @@ namespace AF
         private void Awake()
         {
             this.gameObject.SetActive(false);
+
+            // Fix for issue where opening menu while choosing options hides cursor
+            inputs.onLightAttackInput.AddListener(() =>
+            {
+                if (this.isActiveAndEnabled)
+                {
+                    cursorManager.ShowCursor();
+                }
+            });
         }
 
         private void OnEnable()
@@ -62,6 +71,7 @@ namespace AF
             this.xboxIcon = this.root.Q<VisualElement>("XboxIcon");
 
             onEnableEvent?.Invoke();
+
         }
 
         private void OnDisable()

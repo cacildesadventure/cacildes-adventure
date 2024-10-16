@@ -13,6 +13,7 @@ namespace AF
 
         [Header("Player Settings")]
         public bool usePlayerAnimator = false;
+        public bool useBusyAnimation = false;
 
         PlayerManager playerManager;
         public Transform teleportPlayerToThisTransform;
@@ -39,11 +40,25 @@ namespace AF
 
             if (crossFadeTime <= 0)
             {
-                animator.Play(animationName);
+                if (usePlayerAnimator && useBusyAnimation)
+                {
+                    playerManager.PlayBusyAnimation(animationName);
+                }
+                else
+                {
+                    animator.Play(animationName);
+                }
             }
             else
             {
-                animator.CrossFade(animationName, crossFadeTime);
+                if (usePlayerAnimator && useBusyAnimation)
+                {
+                    playerManager.PlayCrossFadeBusyAnimationWithRootMotion(animationName, crossFadeTime);
+                }
+                else
+                {
+                    animator.CrossFade(animationName, crossFadeTime);
+                }
             }
 
             yield return null;

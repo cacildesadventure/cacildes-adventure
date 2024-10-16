@@ -307,5 +307,20 @@ namespace AF.Animations
         public void OnExecuting()
         {
         }
+
+        public void ShowRifleWeapon()
+        {
+            characterManager.characterBaseShooter.ShowRifleWeapon();
+        }
+        public void HideRifleWeapon()
+        {
+            characterManager.characterBaseShooter.HideRifleWeapon();
+        }
+
+        public void IsFetchingArrow()
+        {
+
+        }
+
     }
 }

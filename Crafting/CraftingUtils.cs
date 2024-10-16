@@ -130,7 +130,7 @@ namespace AF
 
             for (int i = 0; i < resultingRecipes.Length; i++)
             {
-                text += "- " + resultingRecipes[i].resultingItem.GetName();
+                text += "- " + resultingRecipes[i].resultingItem.GetName() + $" ({resultingRecipes[i].resultingAmount})";
                 if (i < resultingRecipes.Length - 1)
                 {
                     text += "\n";

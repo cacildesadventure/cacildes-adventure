@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace AF.Health
 {
@@ -107,34 +104,34 @@ namespace AF.Health
 
             if (this.fire > 0)
             {
-                this.fire += (int)(currentWeapon.GetWeaponFireAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
+                this.fire += (int)(currentWeapon.GetWeaponFireAttack(attackStatManager) + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.frost > 0)
             {
-                this.frost += (int)(currentWeapon.GetWeaponFrostAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
+                this.frost += (int)(currentWeapon.GetWeaponFrostAttack(attackStatManager) + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.magic > 0)
             {
-                this.magic += (int)(currentWeapon.GetWeaponMagicAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
+                this.magic += (int)(currentWeapon.GetWeaponMagicAttack(attackStatManager) + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.lightning > 0)
             {
                 this.lightning += (int)(
-                    currentWeapon.GetWeaponLightningAttack(playerReputation) + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
+                    currentWeapon.GetWeaponLightningAttack(playerReputation, attackStatManager) + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.darkness > 0)
             {
-                this.darkness += (int)(currentWeapon.GetWeaponDarknessAttack(playerReputation)
+                this.darkness += (int)(currentWeapon.GetWeaponDarknessAttack(playerReputation, attackStatManager)
                     + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.water > 0)
             {
-                this.water += (int)(currentWeapon.GetWeaponWaterAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
+                this.water += (int)(currentWeapon.GetWeaponWaterAttack(attackStatManager) + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon) * multiplier);
             }
 
             if (this.pushForce > 0 && isFaithSpell)
@@ -184,19 +181,19 @@ namespace AF.Health
         public void ScaleProjectile(AttackStatManager attackStatManager, Weapon currentWeapon)
         {
             // Steel arrow might inherit magic from a magical bow, hence don't check if base values are greater than zero
-            this.physical += (int)(currentWeapon.GetWeaponAttack() + attackStatManager.GetDexterityBonusFromWeapon(currentWeapon));
+            this.physical += (int)currentWeapon.GetWeaponAttack(attackStatManager);
 
             if (attackStatManager.playerManager.statsBonusController.projectileMultiplierBonus > 0f)
             {
                 this.physical = (int)(this.physical * attackStatManager.playerManager.statsBonusController.projectileMultiplierBonus);
             }
 
-            this.fire += (int)currentWeapon.GetWeaponFireAttack();
-            this.frost += (int)currentWeapon.GetWeaponFrostAttack();
-            this.magic += (int)(currentWeapon.GetWeaponMagicAttack() + attackStatManager.GetIntelligenceBonusFromWeapon(currentWeapon));
-            this.lightning += (int)currentWeapon.GetWeaponLightningAttack(attackStatManager.playerStatsDatabase.GetCurrentReputation());
-            this.darkness += (int)currentWeapon.GetWeaponDarknessAttack(attackStatManager.playerStatsDatabase.GetCurrentReputation());
-            this.water += (int)currentWeapon.GetWeaponWaterAttack();
+            this.fire += (int)currentWeapon.GetWeaponFireAttack(attackStatManager);
+            this.frost += (int)currentWeapon.GetWeaponFrostAttack(attackStatManager);
+            this.magic += (int)currentWeapon.GetWeaponMagicAttack(attackStatManager);
+            this.lightning += (int)currentWeapon.GetWeaponLightningAttack(attackStatManager.playerStatsDatabase.GetCurrentReputation(), attackStatManager);
+            this.darkness += (int)currentWeapon.GetWeaponDarknessAttack(attackStatManager.playerStatsDatabase.GetCurrentReputation(), attackStatManager);
+            this.water += (int)currentWeapon.GetWeaponWaterAttack(attackStatManager);
         }
 
 

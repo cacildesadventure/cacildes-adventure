@@ -14,7 +14,7 @@ namespace AF
         [Header("Loot and Experience")]
 
         [SerializedDictionary("Item", "Chance To Get")]
-        public SerializedDictionary<Item, ItemAmount> lootTable;
+        public SerializedDictionary<Item, LootItemAmount> lootTable;
 
         public int baseGold = 100;
         public int bonusGold = 0;
@@ -79,6 +79,11 @@ namespace AF
 
             foreach (var dropCurrency in lootTable)
             {
+                if (dropCurrency.Value.ignoreIfPlayerOwns && playerManager.playerInventory.inventoryDatabase.HasItem(dropCurrency.Key))
+                {
+                    continue;
+                }
+
                 if (dropCurrency.Key is Card card
                     && playerManager.playerInventory.inventoryDatabase.GetItemAmount(dropCurrency.Key) >= card.maximumCardsAllowedInInventory)
                 {
@@ -165,8 +170,19 @@ namespace AF
                 return;
             }
 
-            GetUIDocumentReceivedItemPrompt().gameObject.SetActive(true);
-            GetUIDocumentReceivedItemPrompt().DisplayItemsReceived(cardsToDisplay);
+            // If an enemy is actively fighting, dont show card
+            if (Utils.HasEnemyFighting())
+            {
+                cardsToDisplay.ForEach(card =>
+                {
+                    GetNotificationManager().ShowNotification(found.GetLocalizedString() + " " + card.itemName, card.sprite);
+                });
+            }
+            else
+            {
+                GetUIDocumentReceivedItemPrompt().gameObject.SetActive(true);
+                GetUIDocumentReceivedItemPrompt().DisplayItemsReceived(cardsToDisplay);
+            }
         }
 
         PlayerManager GetPlayerManager()
